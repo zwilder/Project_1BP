@@ -30,15 +30,17 @@ typedef struct {
 
 typedef struct {
     SDL_Window *window; // The SDL Window
+    Vec2i windowdim; // Window dimensions
     SDL_Surface *screen_surface;
     SDL_Renderer *renderer; // The SDL Renderer
     TTF_Font *font; // SDL Font
     WSL_Texture *spritesheet; // Spritesheet with all the sprites
     WSL_Texture *bg; // Background texture, will be an array eventually?
+    WSL_Texture *buffer; // The texture the game is rendered to
     WSL_Texture *text; // Display text (Needs better name)
     bool keyboard[MAX_KEYBOARD_KEYS]; // Keypress "flags" for all keys
 
-    bool running; // Will likely be replaced with bitflags tlater
+    bool running; // Simple "is this running?" flag
     int state; // Current game state
 
 } WSL_App;
@@ -49,6 +51,8 @@ typedef struct {
 WSL_App* wsl_init_sdl(void);
 void wsl_cleanup_sdl(WSL_App *app);
 bool wsl_load_media(WSL_App *app);
+bool wsl_create_scr_buffer(WSL_App *app);
+void wsl_buffer_to_scr(WSL_App *app);
 
 /*****
  * WSL_Texture - wsl_sdl_texture.c

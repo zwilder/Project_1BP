@@ -21,11 +21,11 @@
 #ifndef DEFS_H
 #define DEFS_H
 
-#define SCREEN_W 1024
-#define SCREEN_H 768
+#define SCREEN_W 256
+#define SCREEN_H 240
 
 #define MAX_KEYBOARD_KEYS 350
-#define FONT_SIZE 20
+#define FONT_SIZE 8
 
 #define MAX_SND_CHANNELS 8
 

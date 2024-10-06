@@ -26,6 +26,9 @@ WSL_App* wsl_init_sdl(void) {
 
     WSL_App *app = malloc(sizeof(WSL_App));
 
+    app->windowdim.x = 1024;
+    app->windowdim.y = 768;
+
     // Initialize SDL
     if(SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO) < 0) {
         printf("SDL could not initialize. SDL Error: %s\n", SDL_GetError());
@@ -36,7 +39,7 @@ WSL_App* wsl_init_sdl(void) {
     if(success) {
         app->window = SDL_CreateWindow("Project 1BP",
                 SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
-                1024, 768, SDL_WINDOW_SHOWN);
+                app->windowdim.x, app->windowdim.y, SDL_WINDOW_SHOWN);
         if(!app->window) {
             printf("Unable to create window. SDL Error: %s\n",
                     SDL_GetError());
@@ -90,7 +93,13 @@ WSL_App* wsl_init_sdl(void) {
         app->screen_surface = SDL_GetWindowSurface(app->window);
     }
 
+    // Load Media
     if(!wsl_load_media(app)) {
+        success = false;
+    }
+
+    // Start screen buffer texture
+    if(!wsl_create_scr_buffer(app)) {
         success = false;
     }
 
@@ -116,6 +125,7 @@ void wsl_cleanup_sdl(WSL_App *app) {
     destroy_wsl_texture(app->spritesheet);
     destroy_wsl_texture(app->bg);
     destroy_wsl_texture(app->text);
+    destroy_wsl_texture(app->buffer);
     SDL_DestroyRenderer(app->renderer);
     app->renderer = NULL;
     SDL_DestroyWindow(app->window);
@@ -130,6 +140,7 @@ void wsl_cleanup_sdl(WSL_App *app) {
 }
 
 bool wsl_load_media(WSL_App *app) {
+    // It would be super cool if this just loaded a single "1BP_Assets.dat"
     bool success = true;
     //int i;
     app->spritesheet = create_wsl_texture(app->renderer);
@@ -155,3 +166,47 @@ bool wsl_load_media(WSL_App *app) {
     return success;
 }
 
+bool wsl_create_scr_buffer(WSL_App *app) {
+    if(app->buffer) {
+        destroy_wsl_texture(app->buffer);
+        app->buffer = NULL;
+    }
+
+    WSL_Texture *t = malloc(sizeof(WSL_Texture));
+    t->tex = SDL_CreateTexture(app->renderer, SDL_PIXELFORMAT_RGBA8888,
+            SDL_TEXTUREACCESS_TARGET, SCREEN_W, SCREEN_H);
+    if(t->tex == NULL) {
+        printf("Unable to create screen buffer texture! SDL_Error: %s\n",
+                SDL_GetError());
+    } else {
+        t->w = SCREEN_W;
+        t->h = SCREEN_H;
+    }
+    app->buffer = t;
+    
+    return (app->buffer != NULL);
+}
+
+void wsl_buffer_to_scr(WSL_App *app) {
+    //Render the screen "buffer" texture to the screen
+    //This needs to:
+    //- Figure out how big to "stretch" app->buffer
+    int x,y;
+    int scalefactor;
+    SDL_Rect renderquad;
+    x = app->windowdim.x / SCREEN_W;
+    y = app->windowdim.y / SCREEN_H;
+    scalefactor = (x > y) ? y : x;
+    //- Put app->buffer centered on the screen
+    x = (app->windowdim.x) / 2; // Center of window
+    x -= (SCREEN_W * scalefactor) / 2; // Minus half the screen width
+    y = (app->windowdim.y) / 2;
+    y -= (SCREEN_H * scalefactor) / 2;
+    renderquad.x = x;
+    renderquad.y = y;
+    renderquad.w = app->buffer->w * scalefactor;
+    renderquad.h = app->buffer->h * scalefactor;
+    // Put app->buffer->tex on app->buffer->renderer, the whole thing taking up
+    // renderquad space
+    SDL_RenderCopy(app->renderer, app->buffer->tex, NULL, &renderquad);
+}

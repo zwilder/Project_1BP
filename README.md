@@ -22,3 +22,5 @@ full screen effects!
 Might include:
 - Load Tiled .tmx files for levels
 - Ambitious goal: Procedurally generate levels using chunks 
+- Compressed asset file - all levels, sprites, sounds etc loaded from a single
+  "1BP_assets.dat" file

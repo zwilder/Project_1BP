@@ -73,3 +73,4 @@ bool wsl_texture_load(WSL_Texture *t, char *path) {
     SDL_FreeSurface(loaded);
     return true;
 }
+

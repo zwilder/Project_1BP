@@ -22,5 +22,25 @@
 
 void draw(WSL_App *game) {
 
+    //Clear the screen
+    SDL_SetRenderDrawColor(game->renderer, 0xFF, 0x00, 0x00, 0xFF);
+    SDL_RenderClear(game->renderer);
+
+    //Set buffer as render target
+    SDL_SetRenderTarget(game->renderer, game->buffer->tex);
+
+    //Draw stuff on the buffer
+    SDL_Rect fillrect = {SCREEN_W / 4, SCREEN_H /4, SCREEN_W / 2, SCREEN_H / 2};
+    SDL_SetRenderDrawColor(game->renderer, 0x00, 0xFF, 0xFF, 0xFF);
+    SDL_RenderFillRect(game->renderer, &fillrect);
+
+    //Reset render target
+    SDL_SetRenderTarget(game->renderer, NULL);
+
+    //Draw the buffer on the screen
+    wsl_buffer_to_scr(game);
+
+    //Present the screen
+    SDL_RenderPresent(game->renderer);
 }
 
