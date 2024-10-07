@@ -1,4 +1,4 @@
-#Project 1-Bit Platformer
+# Project 1-Bit Platformer
 
 SDL2 Platformer project inspired by the wonderful [1-Bit
 Platformer](https://kenney.nl/assets/1-bit-platformer-pack) designed by
@@ -18,6 +18,7 @@ it is the same as the NES - ideally this will give the project that sort of
 vibe. Additionally rendering the entire scene to a texture might allow some cool
 full screen effects!
 - Basic platformer physics - run, jump, climb, fight, collide
+- Controller functionality! Platformers "feel" better with a controller
 
 Might include:
 - Load Tiled .tmx files for levels

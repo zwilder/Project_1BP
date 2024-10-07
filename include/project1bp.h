@@ -40,12 +40,14 @@
  *****/
 #include <mt19937.h>
 #include <vec2i.h>
+#include <vec2f.h>
 
 /*****
  * Project
  *****/
 #include <defs.h>
 #include <wsl_sdl.h>
+#include <entity.h>
 #include <handle_events.h>
 #include <update.h>
 #include <draw.h>

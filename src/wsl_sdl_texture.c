@@ -60,7 +60,8 @@ bool wsl_texture_load(WSL_Texture *t, char *path) {
         printf("Warning: Linear texture filtering not enabled!");
     }
 
-    SDL_SetColorKey(loaded, SDL_TRUE, SDL_MapRGB(loaded->format, 0, 0xFF, 0xFF));
+    // SDL_SetColorKey sets the "transparent" color of the texture
+    SDL_SetColorKey(loaded, SDL_TRUE, SDL_MapRGB(loaded->format, 0, 0, 0));
     t->tex = SDL_CreateTextureFromSurface(t->renderer, loaded);
     if(!t->tex) {
         printf("Unable to create texture from %s! SDL Error: %s\n", path,

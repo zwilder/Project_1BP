@@ -21,24 +21,43 @@
 #include <project1bp.h>
 
 void draw(WSL_App *game) {
+    int i = 0;
+    Entity *entity = NULL;
 
-    //Clear the screen
-    SDL_SetRenderDrawColor(game->renderer, 0xFF, 0x00, 0x00, 0xFF);
+    //Clear the screen (RED temporarily just so I can "see" the buffer edges)
+    SDL_SetRenderDrawColor(game->renderer, 0x10, 0x10, 0x10, 0xFF);
     SDL_RenderClear(game->renderer);
 
     //Set buffer as render target
     SDL_SetRenderTarget(game->renderer, game->buffer->tex);
 
+    
+    //SDL_Rect fillrect = {SCREEN_W / 4, SCREEN_H /4, SCREEN_W / 2, SCREEN_H / 2};
+    //SDL_SetRenderDrawColor(game->renderer, 0xFF, 0xFF, 0xFF, 0xFF);
+    //SDL_RenderFillRect(game->renderer, &fillrect);
+
     //Draw stuff on the buffer
-    SDL_Rect fillrect = {SCREEN_W / 4, SCREEN_H /4, SCREEN_W / 2, SCREEN_H / 2};
-    SDL_SetRenderDrawColor(game->renderer, 0x00, 0xFF, 0xFF, 0xFF);
-    SDL_RenderFillRect(game->renderer, &fillrect);
+    entity = game->entities;
+    while(entity) {
+        if(entity->render) entity->render(entity, game);
+        entity = entity->next;
+    }
 
     //Reset render target
     SDL_SetRenderTarget(game->renderer, NULL);
-
+    
     //Draw the buffer on the screen
     wsl_buffer_to_scr(game);
+    
+    if(game->scanlines) {
+        //Make some fake scanlines just for fun why not
+        //Silly as heck to do this every cycle, it should just be it's own
+        //texture and then draw it on top of everything. 
+        SDL_SetRenderDrawColor(game->renderer, 0x11, 0x11, 0x11, 0x64);
+        for(i = 0; i < game->windowdim.y; i += 3) {
+            SDL_RenderDrawLine(game->renderer, 0, i, game->windowdim.x, i);
+        }
+    }
 
     //Present the screen
     SDL_RenderPresent(game->renderer);

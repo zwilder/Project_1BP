@@ -21,5 +21,24 @@
 #include <project1bp.h>
 
 void update(WSL_App *game) {
+    Entity *entity = NULL, *tmp = NULL;
 
+    // Update entities
+    entity = game->entities;
+    while(entity) {
+        entity->update(entity, game);
+        entity = entity->next;
+    }
+
+    // Cleanup entities
+    entity = game->entities;
+    while(entity) {
+        tmp = entity;
+        entity = entity->next;
+        if(!((tmp->flags & EF_ALIVE) == EF_ALIVE)) {
+            // Entity is dead
+            if(tmp->deathfunc) tmp->deathfunc(tmp, game);
+            wsl_destroy_entity(game,tmp);
+        }
+    }
 }

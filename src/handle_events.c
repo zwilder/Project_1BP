@@ -44,6 +44,9 @@ void handle_keydown(SDL_KeyboardEvent *event, WSL_App *game) {
         game->keyboard[event->keysym.scancode] = true;
     }
     switch(event->keysym.sym) {
+        case SDLK_F1:
+            game->scanlines = !game->scanlines;
+            break;
         case SDLK_q:
         case SDLK_ESCAPE:
             game->running = false;

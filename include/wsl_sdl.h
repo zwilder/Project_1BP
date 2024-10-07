@@ -21,6 +21,8 @@
 #ifndef WSL_SDL_H
 #define WSL_SDL_H
 
+typedef struct Entity Entity;
+
 typedef struct {
     SDL_Texture *tex;
     SDL_Renderer *renderer; // Maybe unnecessary
@@ -41,8 +43,10 @@ typedef struct {
     bool keyboard[MAX_KEYBOARD_KEYS]; // Keypress "flags" for all keys
 
     bool running; // Simple "is this running?" flag
+    bool scanlines; // Draw "scanlines" flag
     int state; // Current game state
 
+    Entity *entities; // Linked list of entities
 } WSL_App;
 
 /*****
@@ -53,6 +57,9 @@ void wsl_cleanup_sdl(WSL_App *app);
 bool wsl_load_media(WSL_App *app);
 bool wsl_create_scr_buffer(WSL_App *app);
 void wsl_buffer_to_scr(WSL_App *app);
+void wsl_add_entity(WSL_App *app, Entity *entity);
+Entity* wsl_remove_entity(WSL_App *app, Entity *entity);
+void wsl_destroy_entity(WSL_App *app, Entity *entity);
 
 /*****
  * WSL_Texture - wsl_sdl_texture.c

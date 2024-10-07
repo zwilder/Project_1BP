@@ -41,6 +41,7 @@ int main(int argc, char **argv) {
         return 1;
     }
 
+    spawn_player(game, SCREEN_W / 2, SCREEN_H / 2);
     /* Basic game loop, straight outta Game Programming Patterns */
     while(game->running) {
         current = current_ms();
