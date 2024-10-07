@@ -25,8 +25,7 @@ Entity* create_player(SDL_Rect spriterect) {
     player->flags |= EF_ALIVE;
 
     player->update = &update_player;
-    player->color.r = 0;
-    player->color.b = 0;
+    player->color = hex_to_rgb(SPRING_GREEN);
     return player;
 }
 

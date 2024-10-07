@@ -18,39 +18,14 @@
 * along with Project 1BP.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef PROJECT1BP_H
-#define PROJECT1BP_H
+#include <project1bp.h>
 
-/*****
- * System
- *****/
-#include <stdio.h>
-#include <stdbool.h>
+SDL_Color hex_to_rgb(uint32_t hex) {
+    SDL_Color color;
+    color.r = (hex >> 16) & 0xFF;
+    color.g = (hex >> 8) & 0xFF;
+    color.b = hex & 0xFF;
+    color.a = 255;
+    return color;
+}
 
-/*****
- * SDL2
- *****/
-#include <SDL2/SDL.h>
-#include <SDL2/SDL_image.h>
-#include <SDL2/SDL_ttf.h>
-#include <SDL2/SDL_mixer.h>
-
-/*****
- * Toolbox
- *****/
-#include <mt19937.h>
-#include <vec2i.h>
-#include <vec2f.h>
-
-/*****
- * Project
- *****/
-#include <defs.h>
-#include <color.h>
-#include <wsl_sdl.h>
-#include <entity.h>
-#include <handle_events.h>
-#include <update.h>
-#include <draw.h>
-
-#endif //PROJECT1BP_H

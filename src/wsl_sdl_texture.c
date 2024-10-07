@@ -55,7 +55,7 @@ bool wsl_texture_load(WSL_Texture *t, char *path) {
     }
 
     // 0: nearest, 1: linear, 2: best (Same as linear according to SDL2Wiki)
-    if(!SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "1"))
+    if(!SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "0"))
     {
         printf("Warning: Linear texture filtering not enabled!");
     }

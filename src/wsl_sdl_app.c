@@ -19,6 +19,7 @@
 */
 
 #include <project1bp.h>
+
 WSL_App* wsl_init_sdl(void) {
     bool success = true;
     int imgflags = IMG_INIT_PNG;

@@ -18,6 +18,7 @@ it is the same as the NES - ideally this will give the project that sort of
 vibe. Additionally rendering the entire scene to a texture might allow some cool
 full screen effects!
 - Basic platformer physics - run, jump, climb, fight, collide
+- Scrolling maps - horizontal AND vertical
 - Controller functionality! Platformers "feel" better with a controller
 
 Might include:
