@@ -29,9 +29,53 @@ long current_ms(void) {
 }
 
 int main(int argc, char **argv) {
+    const float fixed_step = 32.333f;
+    float accumulated = 0.0f;
+    uint32_t current = SDL_GetTicks();
+    uint32_t prev = current;
+    float dt = 0.0f;
+    uint8_t frame = 0;
+
+    WSL_App *game = wsl_init_sdl();
+    init_genrand(time(NULL));
+    if(!game) {
+        printf("Failed to create WSL_App!\n");
+        return 1;
+    }
+
+    spawn_player(game, SCREEN_W / 2, SCREEN_H / 2);
+
+    // Fixed time step game loop
+    while(game->running) {
+        frame += 1;
+        current = SDL_GetTicks();
+        dt = current - prev;
+        prev = current;
+
+        accumulated += dt;
+        game->dt = dt / 100.0;
+
+        while(accumulated >= fixed_step) {
+            handle_events(game);
+            update(game);
+            accumulated -= fixed_step;
+        }
+
+        if(frame % 2 == 0) {
+            draw(game);
+        }
+    }
+
+    wsl_cleanup_sdl(game);
+    return 0;
+}
+
+/*
+int main_old(int argc, char **argv) {
     long lag = 0, current = 0, elapsed = 0;
     long prev = current_ms();
-    long msperframe = 16; // 16ms = ~60fps, 33ms = ~30fps
+    long msperframe = 33; // 16ms = ~60fps, 33ms = ~30fps
+    uint8_t frame = 0;
     WSL_App *game = wsl_init_sdl(); // Start SDL, load resources
 
     init_genrand(time(NULL)); // Seed the pnrg
@@ -42,12 +86,14 @@ int main(int argc, char **argv) {
     }
 
     spawn_player(game, SCREEN_W / 2, SCREEN_H / 2);
-    /* Basic game loop, straight outta Game Programming Patterns */
+    // Basic variable time step game loop, straight outta Game Programming Patterns
     while(game->running) {
         current = current_ms();
         elapsed = current - prev;
         prev = current;
         lag += elapsed;
+
+        game->dt = elapsed; // update delta time
 
         //Handle events
         handle_events(game);
@@ -58,10 +104,14 @@ int main(int argc, char **argv) {
             update(game);
         }
 
-        //Draw
-        draw(game);
-    }
+        //Draw every other frame
+        if(frame % 2 == 0) {
+            draw(game);
+        }
 
+        frame += 1;
+    }
     wsl_cleanup_sdl(game);
     return 0;
 }
+*/

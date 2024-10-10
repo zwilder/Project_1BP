@@ -29,7 +29,10 @@ WSL_App* wsl_init_sdl(void) {
     app->spritesheet = NULL;
     app->bg = NULL;
     app->text = NULL;
-    app->buffer = NULL;
+    app->bufferA = NULL;
+    app->bufferB = NULL;
+    app->cur_buffer = NULL;
+    app->next_buffer = NULL;
 
     app->windowdim.x = 1024;
     app->windowdim.y = 768;
@@ -55,7 +58,7 @@ WSL_App* wsl_init_sdl(void) {
     // Create the renderer
     if(success) {
         app->renderer = SDL_CreateRenderer(app->window, -1,
-                SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
+                SDL_RENDERER_TARGETTEXTURE | SDL_RENDERER_PRESENTVSYNC);
         if(!app->renderer) {
             printf("Renderer could not be created. SDL Error %s\n",
                     SDL_GetError());
@@ -104,7 +107,7 @@ WSL_App* wsl_init_sdl(void) {
     }
 
     // Start screen buffer texture
-    if(!wsl_create_scr_buffer(app)) {
+    if(!wsl_create_scr_buffers(app)) {
         success = false;
     }
 
@@ -131,7 +134,8 @@ void wsl_cleanup_sdl(WSL_App *app) {
     destroy_wsl_texture(app->spritesheet);
     destroy_wsl_texture(app->bg);
     destroy_wsl_texture(app->text);
-    destroy_wsl_texture(app->buffer);
+    destroy_wsl_texture(app->bufferA);
+    destroy_wsl_texture(app->bufferB);
     SDL_DestroyRenderer(app->renderer);
     app->renderer = NULL;
     SDL_DestroyWindow(app->window);
@@ -176,12 +180,22 @@ bool wsl_load_media(WSL_App *app) {
     return success;
 }
 
-bool wsl_create_scr_buffer(WSL_App *app) {
-    if(app->buffer) {
-        destroy_wsl_texture(app->buffer);
-        app->buffer = NULL;
+bool wsl_create_scr_buffers(WSL_App *app) {
+    /* Need to do the following twice, once for bufferA and once for bufferB */
+    if(app->bufferA) {
+        destroy_wsl_texture(app->bufferA);
+        app->bufferA = NULL;
     }
+    if(app->bufferB) {
+        destroy_wsl_texture(app->bufferB);
+        app->bufferB = NULL;
+    }
+    app->bufferA = wsl_create_blank_texture(app->renderer, SCREEN_W, SCREEN_H);
+    app->bufferB = wsl_create_blank_texture(app->renderer, SCREEN_W, SCREEN_H);
+    app->cur_buffer = app->bufferA; // buffer is the current rendered buffer
+    app->next_buffer = app->bufferB;
 
+    /*
     WSL_Texture *t = malloc(sizeof(WSL_Texture));
     t->tex = SDL_CreateTexture(app->renderer, SDL_PIXELFORMAT_RGBA8888,
             SDL_TEXTUREACCESS_TARGET, SCREEN_W, SCREEN_H);
@@ -193,32 +207,9 @@ bool wsl_create_scr_buffer(WSL_App *app) {
         t->h = SCREEN_H;
     }
     app->buffer = t;
+    */
     
-    return (app->buffer != NULL);
-}
-
-void wsl_buffer_to_scr(WSL_App *app) {
-    //Render the screen "buffer" texture to the screen
-    //This needs to:
-    //- Figure out how big to "stretch" app->buffer
-    int x,y;
-    int scalefactor;
-    SDL_Rect renderquad;
-    x = app->windowdim.x / SCREEN_W;
-    y = app->windowdim.y / SCREEN_H;
-    scalefactor = (x > y) ? y : x;
-    //- Put app->buffer centered on the screen
-    x = (app->windowdim.x) / 2; // Center of window
-    x -= (SCREEN_W * scalefactor) / 2; // Minus half the screen width
-    y = (app->windowdim.y) / 2;
-    y -= (SCREEN_H * scalefactor) / 2;
-    renderquad.x = x;
-    renderquad.y = y;
-    renderquad.w = app->buffer->w * scalefactor;
-    renderquad.h = app->buffer->h * scalefactor;
-    // Put app->buffer->tex on app->buffer->renderer, the whole thing taking up
-    // renderquad space
-    SDL_RenderCopy(app->renderer, app->buffer->tex, NULL, &renderquad);
+    return ((app->bufferA != NULL) && (app->bufferB != NULL));
 }
 
 void wsl_add_entity(WSL_App *app, Entity *entity){

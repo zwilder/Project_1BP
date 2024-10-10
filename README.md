@@ -16,12 +16,16 @@ Goals:
 with 16x16 sprites (16 tiles w x 15 tiles high). This 256x240 was chosen because
 it is the same as the NES - ideally this will give the project that sort of
 vibe. Additionally rendering the entire scene to a texture might allow some cool
-full screen effects!
+full screen effects! - In progress, _should_ be good to go... will wait until I
+have more action on the screen to see if the rendering pipeline is decent.
 - Basic platformer physics - run, jump, climb, fight, collide
 - Scrolling maps - horizontal AND vertical
 - Controller functionality! Platformers "feel" better with a controller
 
 Might include:
+- Advanced platformer physics - hang, wall jumps, push/pull blocks
+- Puzzles! "Block" puzzles, "control room" puzzles, lock/key puzzles
+- Scripted events
 - Load Tiled .tmx files for levels
 - Ambitious goal: Procedurally generate levels using chunks 
 - Compressed asset file - all levels, sprites, sounds etc loaded from a single

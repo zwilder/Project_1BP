@@ -21,27 +21,47 @@
 #ifndef ENTITY_H
 #define ENTITY_H
 
-enum { 
-    EF_NONE         = 1 << 0,
-    EF_ALIVE        = 1 << 1,
-    EF_PLAYER       = 1 << 2,
-    EF_ENEMY        = 1 << 3
-};
-
 struct Entity {
     Entity *next; //Entity is a double linked list
     Entity *prev; 
 
-    Vec2f pos; //Entity position x,y
+    Vec2f pos; //Entity position x,y. These need to be Vec2i, 2f is too "smooth"
     Vec2f dpos; // Entity delta position dx,dy
     int frame; // Animation frame timer
     int flags; // Entity flags
+    int state; // Entity state
+    int prev_state; // Entity's previous state
     SDL_Rect spriterect; // Rect of the entity's sprite
     SDL_Color color;
+
+    SDL_RendererFlip flip;
+    SDL_Rect *spriteframes;
+    int framecount;
 
     void (*update)(Entity*, WSL_App*); // Entity update function
     void (*render)(Entity*, WSL_App*); // Entity render function
     void (*deathfunc)(Entity*, WSL_App*); // Function called on destruction
+};
+
+/*****
+ * Entity Flags
+ *****/
+enum { 
+    EF_NONE         = 1 << 0,
+    EF_ALIVE        = 1 << 1,
+    EF_PLAYER       = 1 << 2,
+    EF_ENEMY        = 1 << 3,
+    EF_ONGROUND     = 1 << 4
+};
+
+/*****
+ * Entity States
+ * (More Game Programming Patterns goodness)
+ *****/
+enum {
+    ST_IDLE,
+    ST_WALK,
+    ST_JUMP
 };
 
 /*****
@@ -52,10 +72,15 @@ void destroy_entity(Entity *entity);
 
 void update_entity(Entity *entity, WSL_App *game);
 void render_entity(Entity *entity, WSL_App *game);
+void handle_physics(Entity *entity, WSL_App *game);
+
+bool in_bounds(float x, float y);
+void resolve_movement(Entity *entity, WSL_App *game);
 
 Vec2i get_sprite_coords(int index);
 SDL_Rect get_hitbox(Entity *e);
 bool check_collision_rect(SDL_Rect a, SDL_Rect b);
+bool xy_in_rect(float bx, float by, SDL_Rect a);
 
 /*****
  * Player - entity_player.c

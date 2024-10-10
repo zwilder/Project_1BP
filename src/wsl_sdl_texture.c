@@ -75,3 +75,17 @@ bool wsl_texture_load(WSL_Texture *t, char *path) {
     return true;
 }
 
+WSL_Texture* wsl_create_blank_texture(SDL_Renderer *r, int w, int h) {
+    WSL_Texture *t = malloc(sizeof(WSL_Texture));
+    t->tex = SDL_CreateTexture(r, SDL_PIXELFORMAT_RGBA8888,
+            SDL_TEXTUREACCESS_TARGET, w, h);
+    if(t->tex == NULL) {
+        printf("Unable to create blank texture! SDL_Error: %s\n",
+                SDL_GetError());
+    } else {
+        t->w = SCREEN_W;
+        t->h = SCREEN_H;
+    }
+
+    return t;
+}

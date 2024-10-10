@@ -33,11 +33,16 @@ Entity *create_entity(SDL_Rect spriterect) {
 
     entity->frame = 0;
     entity->flags = EF_NONE;
+    entity->state = ST_IDLE;
     entity->spriterect = spriterect;
     entity->color.r = 255;
     entity->color.g = 255;
     entity->color.b = 255;
     entity->color.a = 255;
+
+    entity->spriteframes = NULL;
+    entity->framecount = 1;
+    entity->flip = SDL_FLIP_NONE;
 
     entity->update = &update_entity;
     entity->render = &render_entity;
@@ -53,6 +58,10 @@ void destroy_entity(Entity *entity) {
      */
     if(!entity) return;
 
+    if(entity->spriteframes) {
+        free(entity->spriteframes);
+    }
+
     free(entity);
 }
 
@@ -60,9 +69,11 @@ void update_entity(Entity *entity, WSL_App *game) {
     // Generic entity update function
     // update() is called once per second (Gameloop is locked at 60fps)
     entity->frame += 1;
+    
     if(entity->frame > 120) {
         entity->frame = 0;
     }
+    
     if(!((entity->flags & EF_ALIVE) == EF_ALIVE)) {
         //Entity is dead, call it's death function
     }
@@ -71,15 +82,95 @@ void update_entity(Entity *entity, WSL_App *game) {
 void render_entity(Entity *entity, WSL_App *game) {
     // Generic entity render function
     SDL_Rect renderquad;
-    renderquad.x = entity->pos.x;
-    renderquad.y = entity->pos.y;
+    int rx = (int)(ceilf(entity->pos.x));
+    int ry = (int)(ceilf(entity->pos.y));
+    
+    renderquad.x = rx;
+    renderquad.y = ry;
     renderquad.w = entity->spriterect.w;
     renderquad.h = entity->spriterect.h;
+    
     SDL_SetTextureColorMod(game->spritesheet->tex, entity->color.r, entity->color.g,
             entity->color.b);
     SDL_SetTextureAlphaMod(game->spritesheet->tex, entity->color.a);
+    
+    SDL_RenderCopyEx(game->renderer, game->spritesheet->tex,
+            &entity->spriterect, &renderquad,
+            0, NULL, entity->flip);
+    /*
     SDL_RenderCopy(game->renderer, game->spritesheet->tex, 
             &entity->spriterect, &renderquad);
+            */
+}
+
+bool is_on_ground(Entity *entity, WSL_App *game) {
+    // Check to see if the entity is on a solid tile (or the bottom of the
+    // screen temporarily)
+    return((entity->pos.y + TILE_SIZE) >= SCREEN_H);
+
+}
+
+void handle_physics(Entity *entity, WSL_App *game) {
+    float gravity = 1.5f; 
+    float friction = 0.5f;
+    int new_x = (int)entity->pos.x;
+    int new_y = (int)entity->pos.y;
+
+    // Check to see if entity is on ground, update EF_ONGROUND
+    if(is_on_ground(entity, game)) {
+        entity->flags |= EF_ONGROUND;
+    } else {
+        entity->flags &= ~EF_ONGROUND;
+    }
+
+    // Add gravity
+    entity->dpos.y += gravity;
+
+    // Add friction TODO: friction should be a property of the ground/tile that
+    // the entity is on. (set this to 0 and the entity slides around on ice!)
+    if(check_flag(entity->flags, EF_ONGROUND)) {
+        if(entity->dpos.x < 0) {
+            //Moving left, add friction right
+            entity->dpos.x += friction;
+        } else {
+            entity->dpos.x -= friction;
+        }
+    }
+
+    // Check movement
+    new_x += (int)(entity->dpos.x + 0.5f);
+    new_y += (int)(entity->dpos.y + 0.5f);
+    if(!in_bounds(new_x, entity->pos.y)) {
+        // moving horizontally out of bounds TODO: This assumes entities can't
+        // move "off screen"
+        new_x = (new_x < 0) ? (0) : (SCREEN_W - TILE_SIZE);
+    }
+    if(!in_bounds(entity->pos.x, new_y)) {
+        // Moving vertically out of bounds
+        new_y = (new_y < 0) ? (0) : (SCREEN_H - TILE_SIZE);
+    }
+
+    // Check collisions
+    
+    // Resolve movement
+    entity->pos.x = (int)new_x;
+    entity->pos.y = (int)new_y;
+}
+
+bool in_bounds(float x, float y) {
+    /*
+     * This function is the result of me weighing the options of either typing:
+     * "out_of_bounds(x,y)" or "in_bounds(x,y)" it makes more sense to me to
+     * check if something is in_bounds(x,y), or !in_bounds(x,y) than to say
+     * something is in bounds by asking !out_of_bounds(x,y).
+     */
+    bool xoob = (x < 0) || ((x + TILE_SIZE) > SCREEN_W);
+    bool yoob = (y < 0) || ((y + TILE_SIZE) > SCREEN_H);
+    return !(xoob || yoob);
+}
+
+void resolve_movement(Entity *entity, WSL_App *game) {
+
 }
 
 Vec2i get_sprite_coords(int index) {
@@ -100,6 +191,11 @@ SDL_Rect get_hitbox(Entity *e) {
      * I should call this "get_aabb" but that literally saves typing two
      * characters and I know that I'll type abbb or aab or something
      * accidentally and be annoyed.
+     *
+     * Since some entities are smaller than the sprite size of 16x16 I may make
+     * this something stored in the entity, and then just use this to get the
+     * default hitbox - would allow for entities that change shape or something
+     * too.
      */
     SDL_Rect result = e->spriterect;
     result.x = e->pos.x;
@@ -130,4 +226,10 @@ bool check_collision_rect(SDL_Rect a, SDL_Rect b) {
     }
 
     return result; 
+}
+
+bool xy_in_rect(float bx, float by, SDL_Rect a) {
+    bool x = ((bx > a.x) && (bx < a.x + a.w));
+    bool y = ((by > a.y) && (by < a.y + a.h));
+    return (x && y);
 }

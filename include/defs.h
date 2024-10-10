@@ -21,12 +21,18 @@
 #ifndef DEFS_H
 #define DEFS_H
 
-#define SCREEN_W 256
+// 256x240 is NES resolution
+#define SCREEN_W 256 
 #define SCREEN_H 240
+
+#define TILE_SIZE 16
 
 #define MAX_KEYBOARD_KEYS 350
 #define FONT_SIZE 8
 
 #define MAX_SND_CHANNELS 8
+
+#define MAX(a,b) (((a) > (b)) ? (a) : (b))
+#define MIN(a,b) (((a) < (b)) ? (a) : (b))
 
 #endif //DEFS_H
