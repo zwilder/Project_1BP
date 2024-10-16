@@ -34,8 +34,8 @@ WSL_App* wsl_init_sdl(void) {
     app->cur_buffer = NULL;
     app->next_buffer = NULL;
 
-    app->windowdim.x = 1024;
-    app->windowdim.y = 768;
+    app->windowdim.x = 768;
+    app->windowdim.y = 720;
 
     // Initialize SDL
     if(SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO) < 0) {
@@ -117,7 +117,8 @@ WSL_App* wsl_init_sdl(void) {
         app = NULL;
     } else {
         app->running = true;
-        app->scanlines = true;
+        app->scanlines = false;
+        app->fullscreen = false;
         // Set keyboard flags to false
         for(i = 0; i < MAX_KEYBOARD_KEYS; i++) {
             app->keyboard[i] = false;
@@ -272,5 +273,19 @@ void wsl_destroy_entity(WSL_App *app, Entity *entity){
     if(wsl_remove_entity(app, entity)) {
         // Destroy entity
         destroy_entity(entity);
+    }
+}
+
+void wsl_set_fullscreen(WSL_App *app) {
+    if(app->fullscreen) {
+        // Already fullscreen, change back to windowed
+        SDL_SetWindowFullscreen(app->window, 0);
+        SDL_SetWindowSize(app->window, 768, 720);
+        SDL_GetWindowSize(app->window, &(app->windowdim.x), &(app->windowdim.y));
+        app->fullscreen = false;
+    } else {
+        SDL_SetWindowFullscreen(app->window, SDL_WINDOW_FULLSCREEN_DESKTOP);
+        SDL_GetWindowSize(app->window, &(app->windowdim.x), &(app->windowdim.y));
+        app->fullscreen = true;
     }
 }

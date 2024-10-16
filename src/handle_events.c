@@ -45,6 +45,9 @@ void handle_keydown(SDL_KeyboardEvent *event, WSL_App *game) {
     }
     switch(event->keysym.sym) {
         case SDLK_F1:
+            wsl_set_fullscreen(game);
+            break;
+        case SDLK_F2:
             game->scanlines = !game->scanlines;
             break;
         case SDLK_q:

@@ -126,6 +126,10 @@ void update_player(Entity *player, WSL_App *game) {
             } else {
                 entity_set_sprite(player,245);
             }
+            if(btn_up) {
+                //Just for fun temporarily
+                player->dpos.y -= 2.5;
+            }
             if(check_flag(player->flags, EF_ONGROUND)) {
                 player->prev_state = ST_JUMP;
                 player->state = ST_IDLE;

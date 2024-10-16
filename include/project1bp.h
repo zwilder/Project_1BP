@@ -42,6 +42,7 @@
 #include <vec2i.h>
 #include <vec2f.h>
 #include <flags.h>
+#include <xml_parse.h>
 
 /*****
  * Project
