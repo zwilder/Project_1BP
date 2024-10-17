@@ -338,6 +338,10 @@ void print_XMLNode(XMLNode *node, int lvl) {
     */
 }
 
+int count_siblings_XMLNode(XMLNode *node) {
+    if(!node) return 0;
+    return(count_siblings_XMLNode(node->next) + 1);
+}
 /*****
  * Token functions
  *****/

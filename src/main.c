@@ -35,6 +35,7 @@ int main(int argc, char **argv) {
     uint32_t prev = current;
     float dt = 0.0f;
     uint8_t frame = 0;
+    Vec2i startpos = {0,0};
 
     WSL_App *game = wsl_init_sdl();
     init_genrand(time(NULL));
@@ -43,7 +44,12 @@ int main(int argc, char **argv) {
         return 1;
     }
 
-    spawn_player(game, SCREEN_W / 2, SCREEN_H / 2);
+
+    //Temporarily draw some tiles here
+    startpos = load_tilemap(game, "scratch/MapA.tmx");
+
+    //Temporarily spawn the player here
+    spawn_player(game, startpos.x, startpos.y);
 
     // Fixed time step game loop
     while(game->running) {

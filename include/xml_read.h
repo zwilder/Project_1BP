@@ -18,42 +18,13 @@
 * along with Project 1BP.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef PROJECT1BP_H
-#define PROJECT1BP_H
+#ifndef XML_READ_H
+#define XML_READ_H
 
-/*****
- * System
- *****/
-#include <stdio.h>
-#include <stdbool.h>
+XMLNode* find_tag(XMLNode *root, const char *tag);
+XMLNode* find_tag_keyvalue(XMLNode *root, const char *tag, 
+        const char *key, const char *value);
+XMLAttribute* find_attribute(XMLAttribute* root, const char *key);
+Vec2i load_tilemap(WSL_App *game, const char *xmlfile);
 
-/*****
- * SDL2
- *****/
-#include <SDL2/SDL.h>
-#include <SDL2/SDL_image.h>
-#include <SDL2/SDL_ttf.h>
-#include <SDL2/SDL_mixer.h>
-
-/*****
- * Toolbox
- *****/
-#include <mt19937.h>
-#include <vec2i.h>
-#include <vec2f.h>
-#include <flags.h>
-#include <xml_parse.h>
-
-/*****
- * Project
- *****/
-#include <defs.h>
-#include <color.h>
-#include <wsl_sdl.h>
-#include <entity.h>
-#include <handle_events.h>
-#include <update.h>
-#include <draw.h>
-#include <xml_read.h>
-
-#endif //PROJECT1BP_H
+#endif //XML_READ

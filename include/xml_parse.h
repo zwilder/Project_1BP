@@ -74,6 +74,7 @@ void add_text_XMLNode(XMLNode *node, char *text);
 void add_child_XMLNode(XMLNode *parent, XMLNode *node);
 void print_XMLAttributes(XMLAttribute *attr, int lvl);
 void print_XMLNode(XMLNode *node, int lvl);
+int count_siblings_XMLNode(XMLNode *node);
 
 /*****
  * Token

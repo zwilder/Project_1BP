@@ -126,9 +126,17 @@ void update_player(Entity *player, WSL_App *game) {
             } else {
                 entity_set_sprite(player,245);
             }
-            if(btn_up) {
-                //Just for fun temporarily
-                player->dpos.y -= 2.5;
+            if(btn_lt) {
+                player->dpos.x -= acceleration/2;
+            } else if (btn_rt) {
+                player->dpos.x += acceleration/2;
+            }
+            if(player->dpos.x < (-1 * speed)) {
+                player->dpos.x = -1 * speed;
+            }
+
+            if(player->dpos.x > speed) {
+                player->dpos.x = speed;
             }
             if(check_flag(player->flags, EF_ONGROUND)) {
                 player->prev_state = ST_JUMP;

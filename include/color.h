@@ -49,5 +49,6 @@
 #define AQUAMARINE 0x4dcced
 
 SDL_Color hex_to_rgb(uint32_t hex);
+SDL_Color str_to_color(const char *str);
 
 #endif //COLOR_H

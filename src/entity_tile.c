@@ -18,42 +18,19 @@
 * along with Project 1BP.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef PROJECT1BP_H
-#define PROJECT1BP_H
+#include <project1bp.h>
 
-/*****
- * System
- *****/
-#include <stdio.h>
-#include <stdbool.h>
+Entity* create_tile(int x, int y, SDL_Rect spriterect) {
+    // Generic tile entity
+    Entity *tile = create_entity(spriterect);
+    tile->flags |= EF_ALIVE; // Note, EF_TILE is for tiles that block movement
+    tile->pos.x = x;
+    tile->pos.y = y;
+    tile->color = hex_to_rgb(WHITE);
 
-/*****
- * SDL2
- *****/
-#include <SDL2/SDL.h>
-#include <SDL2/SDL_image.h>
-#include <SDL2/SDL_ttf.h>
-#include <SDL2/SDL_mixer.h>
+    return tile;
+}
 
-/*****
- * Toolbox
- *****/
-#include <mt19937.h>
-#include <vec2i.h>
-#include <vec2f.h>
-#include <flags.h>
-#include <xml_parse.h>
-
-/*****
- * Project
- *****/
-#include <defs.h>
-#include <color.h>
-#include <wsl_sdl.h>
-#include <entity.h>
-#include <handle_events.h>
-#include <update.h>
-#include <draw.h>
-#include <xml_read.h>
-
-#endif //PROJECT1BP_H
+Entity* create_tilev(Vec2i pos, SDL_Rect spriterect) {
+    return create_tile(pos.x,pos.y,spriterect);
+}

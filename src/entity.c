@@ -185,6 +185,21 @@ Vec2i get_sprite_coords(int index) {
     return result;
 }
 
+SDL_Rect get_sprite_rect(int index) {
+    SDL_Rect result = {0,0,TILE_SIZE,TILE_SIZE};
+    Vec2i xy = get_sprite_coords(index);
+    result.x = xy.x;
+    result.y = xy.y;
+    return result;
+}
+
+Vec2i get_map_coords(int x, int y) {
+    Vec2i result = {0,0};
+    result.x = x * TILE_SIZE;
+    result.y = y * TILE_SIZE;
+    return result;
+}
+
 SDL_Rect get_hitbox(Entity *e) {
     /*
      * Rectangle around the sprite, the "Axis Aligned Bounding Box"....
@@ -229,7 +244,7 @@ bool check_collision_rect(SDL_Rect a, SDL_Rect b) {
 }
 
 bool xy_in_rect(float bx, float by, SDL_Rect a) {
-    bool x = ((bx > a.x) && (bx < a.x + a.w));
-    bool y = ((by > a.y) && (by < a.y + a.h));
+    bool x = ((bx >= a.x) && (bx <= a.x + a.w));
+    bool y = ((by >= a.y) && (by <= a.y + a.h));
     return (x && y);
 }

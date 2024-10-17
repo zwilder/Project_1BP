@@ -51,7 +51,9 @@ enum {
     EF_ALIVE        = 1 << 1,
     EF_PLAYER       = 1 << 2,
     EF_ENEMY        = 1 << 3,
-    EF_ONGROUND     = 1 << 4
+    EF_ONGROUND     = 1 << 4,
+    EF_TILE         = 1 << 5,
+    EF_PLATFORM     = 1 << 6
 };
 
 /*****
@@ -78,6 +80,8 @@ bool in_bounds(float x, float y);
 void resolve_movement(Entity *entity, WSL_App *game);
 
 Vec2i get_sprite_coords(int index);
+SDL_Rect get_sprite_rect(int index);
+Vec2i get_map_coords(int x, int y);
 SDL_Rect get_hitbox(Entity *e);
 bool check_collision_rect(SDL_Rect a, SDL_Rect b);
 bool xy_in_rect(float bx, float by, SDL_Rect a);
@@ -88,5 +92,11 @@ bool xy_in_rect(float bx, float by, SDL_Rect a);
 Entity *create_player(SDL_Rect spriterect);
 void spawn_player(WSL_App *game, float x, float y);
 void update_player(Entity *player, WSL_App *game);
+
+/*****
+ * Tile - entity_tile.c
+ *****/
+Entity* create_tile(int x, int y, SDL_Rect spriterect);
+Entity* create_tilev(Vec2i pos, SDL_Rect spriterect);
 
 #endif //ENTITY_H
