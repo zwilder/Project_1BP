@@ -18,8 +18,8 @@
 * along with Project 1BP.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef XML_READ_H
-#define XML_READ_H
+#ifndef LOAD_TILEMAP_H
+#define LOAD_TILEMAP_H 
 
 XMLNode* find_tag(XMLNode *root, const char *tag);
 XMLNode* find_tag_keyvalue(XMLNode *root, const char *tag, 
@@ -27,4 +27,4 @@ XMLNode* find_tag_keyvalue(XMLNode *root, const char *tag,
 XMLAttribute* find_attribute(XMLAttribute* root, const char *key);
 Vec2i load_tilemap(WSL_App *game, const char *xmlfile);
 
-#endif //XML_READ
+#endif // LOAD_TILEMAP_H

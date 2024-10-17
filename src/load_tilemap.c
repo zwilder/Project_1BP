@@ -106,31 +106,60 @@ Vec2i load_tilemap(WSL_App *game, const char *xmlfile) {
     Token *xtmp = NULL;
     Entity *tile = NULL;
     SDL_Rect *color_rects = NULL;
+    SDL_Rect *obj_rects = NULL;
     char **color = NULL;
-    int i = 0, x = 0, y = 0, id = 0, num_objs = 0;
+    char **objects = NULL;
+    char **obj_names = NULL;
+    int i = 0, x = 0, y = 0, id = 0, num_colors = 0, num_objects = 0;
 
-    // Find the "objectgroup" tag
+    // Find the "objectgroup" tag with name=colors
     layer = find_tag_keyvalue(xml, "objectgroup", "name", "colors");
-
-    if(!layer) {
-        destroy_XMLNode(xml);
-        return result;
-    }
-
-    if(strcmp(find_attribute(layer->attributes, "name")->value, "colors") == 0) {
+    if(layer) {
         // count the number of objects
         data = layer->children;
-        num_objs = count_siblings_XMLNode(layer->children);
+        num_colors = count_siblings_XMLNode(layer->children);
 
         // Allocate memory for array of color_rects
-        color_rects = malloc(sizeof(SDL_Rect) * num_objs);
-        color = malloc(sizeof(char*) * num_objs);
-        for(i = 0; i < num_objs; i++) {
-            color_rects[i].x = atoi(find_attribute(data->attributes, "x")->value);
-            color_rects[i].y = atoi(find_attribute(data->attributes, "y")->value);
-            color_rects[i].w = atoi(find_attribute(data->attributes, "width")->value);
-            color_rects[i].h = atoi(find_attribute(data->attributes, "height")->value);
-            color[i] = (find_attribute(data->attributes, "type"))->value;
+        color_rects = malloc(sizeof(SDL_Rect) * num_colors);
+        color = malloc(sizeof(char*) * num_colors);
+        for(i = 0; i < num_colors; i++) {
+            attr = find_attribute(data->attributes, "x");
+            if(attr) color_rects[i].x = atoi(attr->value);
+            attr = find_attribute(data->attributes, "y");
+            if(attr) color_rects[i].y = atoi(attr->value);
+            attr = find_attribute(data->attributes, "width");
+            if(attr) color_rects[i].w = atoi(attr->value);
+            attr = find_attribute(data->attributes, "height");
+            if(attr) color_rects[i].h = atoi(attr->value);
+            attr = find_attribute(data->attributes, "type");
+            if(attr) color[i] =attr->value;
+            data = data->next;
+        }
+    }
+
+    // Find the "objectgroup" tag with name=objects
+    layer = find_tag_keyvalue(xml, "objectgroup", "name", "objects");
+    if(layer) {
+        data = layer->children;
+        num_objects = count_siblings_XMLNode(layer->children);
+
+        // Allocate memory for array of obj_rects and char *objects
+        obj_rects = malloc(sizeof(SDL_Rect) * num_objects);
+        objects = malloc(sizeof(char*) * num_objects);
+        obj_names = malloc(sizeof(char*) * num_objects);
+        for(i = 0; i < num_objects; i++) {
+            attr = find_attribute(data->attributes, "x");
+            if(attr) obj_rects[i].x = atoi(attr->value);
+            attr = find_attribute(data->attributes, "y");
+            if(attr) obj_rects[i].y = atoi(attr->value);
+            attr = find_attribute(data->attributes, "width");
+            if(attr) obj_rects[i].w = atoi(attr->value);
+            attr = find_attribute(data->attributes, "height");
+            if(attr) obj_rects[i].h = atoi(attr->value);
+            attr = find_attribute(data->attributes, "type");
+            if(attr) objects[i] = attr->value;
+            attr = find_attribute(data->attributes, "name");
+            if(attr) obj_names[i] = attr->value;
             data = data->next;
         }
     }
@@ -167,6 +196,7 @@ Vec2i load_tilemap(WSL_App *game, const char *xmlfile) {
     lines = create_token_list(data->text, '\n', '\0');
     ytmp = lines;
     y = -1;
+    
     while(ytmp) {
         destroy_token_list(cols);
         cols = create_token_list(ytmp->s, ',','\0');
@@ -180,12 +210,25 @@ Vec2i load_tilemap(WSL_App *game, const char *xmlfile) {
                 // For each created tile, check to see if it's x,y is inside one
                 // of the identified color/object rects. If it is, modify the tile's
                 // attributes accordingly.
-                for(i = 0; i < num_objs; i++) {
+                for(i = 0; i < num_colors; i++) {
                     if(xy_in_rect((x * TILE_SIZE), (y * TILE_SIZE), color_rects[i])) {
                         if(color[i]) {
                             tile->color = str_to_color(color[i]);
                         }
                     }
+                }
+                for(i = 0; i < num_objects; i++) {
+                    if(xy_in_rect(x * TILE_SIZE, y * TILE_SIZE, obj_rects[i])) {
+                        if(objects[i]) {
+                            if(strcmp(objects[i], "tile") == 0) tile->flags |= EF_TILE;
+                            if(strcmp(objects[i], "platform") == 0) tile->flags |= EF_PLATFORM;
+                            if(strcmp(objects[i], "start") == 0)  {
+                                result.x = tile->pos.x;
+                                result.y = tile->pos.y;
+                            }
+                        }
+                    }
+
                 }
                 wsl_add_entity(game,tile);
             }
@@ -195,9 +238,14 @@ Vec2i load_tilemap(WSL_App *game, const char *xmlfile) {
         ytmp = ytmp->next;
         y += 1;
     }
+    
 
+    //Cleanup
     free(color_rects);
+    free(obj_rects);
     free(color); // just freeing the array of pointers, the actual strings are owned elsewhere
+    free(objects);
+    free(obj_names);
     destroy_token_list(lines);
     destroy_token_list(cols);
     destroy_XMLNode(xml);

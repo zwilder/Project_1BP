@@ -32,10 +32,11 @@ typedef struct {
 
 typedef struct {
     SDL_Window *window; // The SDL Window
-    Vec2i windowdim; // Window dimensions
     SDL_Surface *screen_surface;
     SDL_Renderer *renderer; // The SDL Renderer
     TTF_Font *font; // SDL Font
+
+    Vec2i windowdim; // Window dimensions
     WSL_Texture *spritesheet; // Spritesheet with all the sprites
     WSL_Texture *bg; // Background texture, will be an array eventually?
 

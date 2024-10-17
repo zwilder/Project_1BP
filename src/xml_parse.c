@@ -352,7 +352,7 @@ Token* create_token_blank(int strsize) {
     if(!node) return NULL;
     //TODO: This is silly. Allocating twice the amount for the string fixes
     //read/write memory errors in Valgrind.
-    node->s = malloc(2 * sizeof(char) * (strsize + 1));
+    node->s = malloc(4 * sizeof(char) * (strsize + 1));
     if(node->s == NULL) {
         free(node);
         return NULL;

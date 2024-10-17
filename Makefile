@@ -5,7 +5,7 @@ INC_DIR = ./include
 CC = gcc
 CFLAGS = -I$(INC_DIR)/ 
 LDFLAGS = -lm -lSDL2 -lSDL2_image -lSDL2_ttf -lSDL2_mixer -no-pie
-OFLAGS = -O2
+OFLAGS = 
 GFLAGS = -g -Wall
 DEPS = $(OBJECTS:.o=.d)
 

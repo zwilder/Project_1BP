@@ -26,13 +26,20 @@ WSL_App* wsl_init_sdl(void) {
     int i = 0;
 
     WSL_App *app = malloc(sizeof(WSL_App));
+    app->window = NULL;
+    app->screen_surface = NULL;
+    app->renderer = NULL;
+    app->font = NULL;
     app->spritesheet = NULL;
     app->bg = NULL;
-    app->text = NULL;
+
     app->bufferA = NULL;
     app->bufferB = NULL;
     app->cur_buffer = NULL;
     app->next_buffer = NULL;
+    app->text = NULL;
+
+    app->entities = NULL;
 
     app->windowdim.x = 768;
     app->windowdim.y = 720;
@@ -117,7 +124,7 @@ WSL_App* wsl_init_sdl(void) {
         app = NULL;
     } else {
         app->running = true;
-        app->scanlines = true;
+        app->scanlines = false;
         app->fullscreen = false;
         // Set keyboard flags to false
         for(i = 0; i < MAX_KEYBOARD_KEYS; i++) {
@@ -130,6 +137,7 @@ WSL_App* wsl_init_sdl(void) {
 
 void wsl_cleanup_sdl(WSL_App *app) {
     if(!app) return;
+    Entity *entity = NULL;
 
     // Cleanup SDL
     destroy_wsl_texture(app->spritesheet);
@@ -137,15 +145,27 @@ void wsl_cleanup_sdl(WSL_App *app) {
     destroy_wsl_texture(app->text);
     destroy_wsl_texture(app->bufferA);
     destroy_wsl_texture(app->bufferB);
+
+    SDL_FreeSurface(app->screen_surface);
+    app->screen_surface = NULL;
     SDL_DestroyRenderer(app->renderer);
     app->renderer = NULL;
     SDL_DestroyWindow(app->window);
     app->window = NULL;
+    TTF_CloseFont(app->font);
+    app->font = NULL;
+
     IMG_Quit();
-    //TTF_CloseFont(app->font);
     TTF_Quit();
-    //Mix_Quit();
+    Mix_Quit();
     SDL_Quit();
+
+    // Cleanup entity list
+    while(app->entities) {
+        entity = app->entities;
+        app->entities = app->entities->next;
+        destroy_entity(entity);
+    }
 
     free(app);
 }

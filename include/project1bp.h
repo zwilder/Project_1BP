@@ -54,6 +54,6 @@
 #include <handle_events.h>
 #include <update.h>
 #include <draw.h>
-#include <xml_read.h>
+#include <load_tilemap.h>
 
 #endif //PROJECT1BP_H

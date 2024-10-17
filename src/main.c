@@ -37,12 +37,14 @@ int main(int argc, char **argv) {
     uint8_t frame = 0;
     Vec2i startpos = {0,0};
 
-    WSL_App *game = wsl_init_sdl();
-    init_genrand(time(NULL));
+    WSL_App *game = NULL;
+    game = wsl_init_sdl();
     if(!game) {
         printf("Failed to create WSL_App!\n");
         return 1;
     }
+
+    init_genrand(time(NULL));
 
 
     //Temporarily draw some tiles here

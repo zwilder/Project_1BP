@@ -106,7 +106,22 @@ void render_entity(Entity *entity, WSL_App *game) {
 bool is_on_ground(Entity *entity, WSL_App *game) {
     // Check to see if the entity is on a solid tile (or the bottom of the
     // screen temporarily)
-    return((entity->pos.y + TILE_SIZE) >= SCREEN_H);
+    int y = entity->pos.y + TILE_SIZE;
+    if (y >= SCREEN_H) {
+        return true;
+    }
+    bool solid_tile = false;
+    Entity *other = game->entities;
+    SDL_Rect o_rect = {0,0,0,0};
+    // Loop through entities to see if bottom of entities AABB is on top of an
+    // entity with EF_TILE or EF_PLATFORM
+    while(other) {
+        if(check_flag(other->flags, EF_TILE)) {
+
+        }
+        other = other->next;
+    }
+    return false;
 
 }
 
@@ -153,8 +168,11 @@ void handle_physics(Entity *entity, WSL_App *game) {
     // Check collisions
     
     // Resolve movement
+
     entity->pos.x = (int)new_x;
     entity->pos.y = (int)new_y;
+
+    // Each entities position needs to be aligned with tile coordinates
 }
 
 bool in_bounds(float x, float y) {

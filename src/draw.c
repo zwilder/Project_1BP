@@ -26,6 +26,7 @@ void swap_buffers(WSL_App *app);
 void draw(WSL_App *game) {
     int i = 0;
     Entity *entity = NULL;
+    SDL_Rect hitbox;
 
     SDL_SetRenderDrawColor(game->renderer, 0x0F, 0x10, 0x10, 0xFF);
     SDL_RenderClear(game->renderer);
@@ -42,9 +43,12 @@ void draw(WSL_App *game) {
     SDL_SetRenderDrawColor(game->renderer, 0, 0, 0, 255);
     SDL_RenderFillRect(game->renderer, &fillrect);
 
+    SDL_SetRenderDrawColor(game->renderer, 255, 0, 0, 255);
     //Draw stuff on the first buffer
     entity = game->entities;
     while(entity) {
+        hitbox = get_hitbox(entity);
+        SDL_RenderDrawRect(game->renderer, &hitbox);
         if(entity->render) entity->render(entity, game);
         entity = entity->next;
     }
@@ -61,6 +65,8 @@ void draw(WSL_App *game) {
     //Make some fake scanlines just for fun why not
     //Silly as heck to do this every cycle, it should just be it's own
     //texture and then draw it on top of everything. 
+    // TODO: This looks awesome as heck but valgrind complains that
+    // game->renderer is "uninitialized".
     if(game->scanlines) {
         SDL_SetRenderDrawColor(game->renderer, 0x11, 0x11, 0x11, 0x64);
         for(i = 0; i < game->windowdim.y; i += 3) {
