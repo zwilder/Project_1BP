@@ -184,6 +184,18 @@ void destroy_XMLAttribute(XMLAttribute *attr) {
     attr = NULL;
 }
 
+XMLAttribute* find_attribute(XMLAttribute* root, const char *key) {
+    XMLAttribute *result = NULL;
+    if(root == NULL) {
+        return result;
+    }
+    if(strcmp(root->key, key) == 0) {
+        return root;
+    }
+    result = find_attribute(root->next, key);
+    return result;
+}
+
 /*****
  * XMLNode Functions
  *****/
@@ -342,6 +354,61 @@ int count_siblings_XMLNode(XMLNode *node) {
     if(!node) return 0;
     return(count_siblings_XMLNode(node->next) + 1);
 }
+
+XMLNode* find_tag(XMLNode *root, const char *tag) {
+    // Depth first search
+    XMLNode *result = NULL;
+    // If root is NULL, obviously return NULL
+    if(root == NULL) {
+        return result;
+    }
+
+    // If root is the tag we are looking for, return root
+    if(strcmp(root->tag, tag) == 0) {
+        return root;
+    }
+
+    // Check children
+    result = find_tag(root->children, tag);
+    if(result != NULL) {
+        return result;
+    }
+
+    // Check siblings
+    result = find_tag(root->next, tag);
+    return result;
+}
+
+XMLNode* find_tag_keyvalue(XMLNode *root, const char *tag, 
+        const char *key, const char *value) {
+    // Find a tag with an attribute key/value pair
+    XMLNode *result = NULL;
+    XMLAttribute *attr = NULL;
+
+    // If root is NULL, return NULL
+    if(root == NULL) return NULL;
+
+    // If root is the tag with the right attribute key/value
+    if(strcmp(root->tag, tag) == 0) {
+        attr = find_attribute(root->attributes, key);
+        if(attr) {
+            if(strcmp(attr->value, value) == 0) {
+                return root;
+            }
+        }
+    }
+
+    // Check children
+    result = find_tag_keyvalue(root->children, tag, key, value);
+    if(result != NULL) {
+        return result;
+    }
+
+    // Check siblings
+    result = find_tag_keyvalue(root->next, tag, key, value);
+    return result;
+}
+
 /*****
  * Token functions
  *****/

@@ -12,7 +12,9 @@ have levels, scores, collectibles, environmental obstacles, multiple enemies.
 Right now the project will load and interpret the .tmx files saved by
 [Tiled](https://www.mapeditor.org/). You can draw the tilemap, define
 objects/colors with rectangles, and the game will load them from the command
-line with `./1BP mapfile.tmx`.
+line with `./1BP mapfile.tmx`. There are a couple (basic)
+[examples](https://github.com/zwilder/Project_1BP/blob/master/assets/MapB.tmx)
+in `assets/`.
 
 The main character moves with basic physics - accelerates to a top speed, jumps
 and falls with gravity. The collision system is still a work in progress, and is
@@ -41,6 +43,9 @@ Might include:
 - Puzzles! "Block" puzzles, "control room" puzzles, lock/key puzzles
 - Scripted events
 - Load Tiled .tmx files for levels
+- Alternatively, make a "level editor" program including the scripted events
+  that can output XML files - like Tiled, except hand rolled and tailored to
+this game
 - Ambitious goal: Procedurally generate levels using chunks 
 - Compressed asset file - all levels, sprites, sounds etc loaded from a single
   "1BP_assets.dat" file

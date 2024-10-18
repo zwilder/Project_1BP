@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.11.0" orientation="orthogonal" renderorder="right-down" width="16" height="15" tilewidth="16" tileheight="16" infinite="0" nextlayerid="4" nextobjectid="37">
+<map version="1.10" tiledversion="1.11.0" orientation="orthogonal" renderorder="right-down" width="16" height="15" tilewidth="16" tileheight="16" infinite="0" nextlayerid="4" nextobjectid="39">
  <editorsettings>
   <export format="tmx"/>
  </editorsettings>
@@ -23,25 +23,27 @@
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
 </data>
  </layer>
- <objectgroup id="2" name="colors" visible="0">
+ <objectgroup id="2" name="colors">
   <object id="8" type="SPRING_GREEN" x="0" y="112" width="256" height="44"/>
-  <object id="9" type="CHESTNUT" x="144" y="96" width="16" height="8"/>
+  <object id="9" type="CHESTNUT" x="144" y="96" width="12" height="8"/>
   <object id="10" type="CHESTNUT" x="176" y="80" width="16" height="8"/>
-  <object id="11" type="CHESTNUT" x="144" y="64" width="16" height="8"/>
+  <object id="11" type="CHESTNUT" x="144" y="64" width="12" height="8"/>
   <object id="12" type="CHESTNUT" x="176" y="48" width="16" height="8"/>
-  <object id="13" type="CHESTNUT" x="160" y="48" width="16" height="60"/>
+  <object id="13" type="CHESTNUT" x="160" y="32" width="12" height="76"/>
   <object id="14" type="BRONZE" x="16" y="96" width="16" height="12"/>
   <object id="15" type="SPRING_GREEN" x="160" y="160" width="32" height="48"/>
   <object id="17" type="SPRING_GREEN" x="48" y="160" width="16" height="12"/>
-  <object id="18" type="HOT_PINK" x="64" y="96" width="48" height="12"/>
+  <object id="18" type="HOT_PINK" x="80" y="96" width="12" height="12"/>
   <object id="19" type="LIME_GREEN" x="224" y="96" width="16" height="12"/>
-  <object id="20" type="CHESTNUT" x="160" y="32" width="16" height="12"/>
+  <object id="20" type="CHESTNUT" x="176" y="96" width="16" height="12"/>
   <object id="31" type="BRONZE" x="208" y="96" width="12" height="12"/>
   <object id="34" type="SPRING_GREEN" x="80" y="160" width="64" height="32"/>
   <object id="35" type="SILVER" x="28" y="128" width="208" height="12"/>
   <object id="36" type="SILVER" x="112" y="144" width="12" height="12"/>
+  <object id="37" type="LIME_GREEN" x="96" y="96" width="12" height="12"/>
+  <object id="38" type="LIME_GREEN" x="64" y="96" width="12" height="12"/>
  </objectgroup>
- <objectgroup id="3" name="objects">
+ <objectgroup id="3" name="objects" visible="0">
   <object id="22" type="tile" x="0" y="112" width="256" height="44"/>
   <object id="23" type="platform" x="144" y="96" width="12" height="8"/>
   <object id="24" type="platform" x="176" y="80" width="16" height="8"/>

@@ -21,10 +21,6 @@
 #ifndef LOAD_TILEMAP_H
 #define LOAD_TILEMAP_H 
 
-XMLNode* find_tag(XMLNode *root, const char *tag);
-XMLNode* find_tag_keyvalue(XMLNode *root, const char *tag, 
-        const char *key, const char *value);
-XMLAttribute* find_attribute(XMLAttribute* root, const char *key);
 Vec2i load_tilemap(WSL_App *game, const char *xmlfile);
 
 #endif // LOAD_TILEMAP_H

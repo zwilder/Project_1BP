@@ -20,75 +20,46 @@
 
 #include <project1bp.h>
 
-
 /*
  * Take a parsed XML file (from an XML_Node), and create game entities
  */
 
-XMLNode* find_tag(XMLNode *root, const char *tag) {
-    // Depth first search
-    XMLNode *result = NULL;
-    // If root is NULL, obviously return NULL
-    if(root == NULL) {
-        return result;
-    }
-
-    // If root is the tag we are looking for, return root
-    if(strcmp(root->tag, tag) == 0) {
-        return root;
-    }
-
-    // Check children
-    result = find_tag(root->children, tag);
-    if(result != NULL) {
-        return result;
-    }
-
-    // Check siblings
-    result = find_tag(root->next, tag);
-    return result;
-}
-
-XMLNode* find_tag_keyvalue(XMLNode *root, const char *tag, 
-        const char *key, const char *value) {
-    // Find a tag with an attribute key/value pair
-    XMLNode *result = NULL;
-    XMLAttribute *attr = NULL;
-
-    // If root is NULL, return NULL
-    if(root == NULL) return NULL;
-
-    // If root is the tag with the right attribute key/value
-    if(strcmp(root->tag, tag) == 0) {
-        attr = find_attribute(root->attributes, key);
-        if(attr) {
-            if(strcmp(attr->value, value) == 0) {
-                return root;
+void assign_colors(Entity *e, int x, int y, int num, 
+        SDL_Rect *rects, char **colors) {
+    /* load_tilemap() was getting chonky, assign_colors and assign_objects were
+     * good, easy things to pull out and put into it's own function */
+    int i = 0;
+    for(i = 0; i < num; i++) {
+        if(xy_in_rect((x * TILE_SIZE), (y * TILE_SIZE), rects[i])) {
+            if(colors[i]) {
+                e->color = str_to_color(colors[i]);
             }
         }
     }
-
-    // Check children
-    result = find_tag_keyvalue(root->children, tag, key, value);
-    if(result != NULL) {
-        return result;
-    }
-
-    // Check siblings
-    result = find_tag_keyvalue(root->next, tag, key, value);
-    return result;
 }
 
-XMLAttribute* find_attribute(XMLAttribute* root, const char *key) {
-    XMLAttribute *result = NULL;
-    if(root == NULL) {
-        return result;
+void assign_objects(Entity *e, int id, int x, int y, int num,
+        SDL_Rect *rects, char **objects, char **names) {
+    int i = 0;
+    for(i = 0; i < num; i++) {
+        if(xy_in_rect(x * TILE_SIZE, y * TILE_SIZE, rects[i])) {
+            if(objects[i]) {
+                if(strcmp(objects[i], "tile") == 0) e->flags |= EF_TILE;
+                if(strcmp(objects[i], "platform") == 0) e->flags |= EF_PLATFORM;
+                if(strcmp(objects[i], "start") == 0) e->flags |= EF_START; 
+                if(strcmp(objects[i], "anim") == 0 ) {
+                    if(names[i]) {
+                        e->spriteframes = malloc(sizeof(SDL_Rect) * 2);
+                        e->framecount = 2;
+                        e->spriteframes[0] = get_sprite_rect(id - 1);
+                        e->spriteframes[1] = get_sprite_rect(atoi(names[i]));
+                        e->update = &update_tile;
+                    }
+                }
+            }
+        }
+
     }
-    if(strcmp(root->key, key) == 0) {
-        return root;
-    }
-    result = find_attribute(root->next, key);
-    return result;
 }
 
 Vec2i load_tilemap(WSL_App *game, const char *xmlfile) {
@@ -210,35 +181,10 @@ Vec2i load_tilemap(WSL_App *game, const char *xmlfile) {
                 // For each created tile, check to see if it's x,y is inside one
                 // of the identified color/object rects. If it is, modify the tile's
                 // attributes accordingly.
-                for(i = 0; i < num_colors; i++) {
-                    if(xy_in_rect((x * TILE_SIZE), (y * TILE_SIZE), color_rects[i])) {
-                        if(color[i]) {
-                            tile->color = str_to_color(color[i]);
-                        }
-                    }
-                }
-                for(i = 0; i < num_objects; i++) {
-                    if(xy_in_rect(x * TILE_SIZE, y * TILE_SIZE, obj_rects[i])) {
-                        if(objects[i]) {
-                            if(strcmp(objects[i], "tile") == 0) tile->flags |= EF_TILE;
-                            if(strcmp(objects[i], "platform") == 0) tile->flags |= EF_PLATFORM;
-                            if(strcmp(objects[i], "start") == 0)  {
-                                result.x = tile->pos.x;
-                                result.y = tile->pos.y;
-                            }
-                            if(strcmp(objects[i], "anim") == 0 ) {
-                                if(obj_names[i]) {
-                                    tile->spriteframes = malloc(sizeof(SDL_Rect) * 2);
-                                    tile->framecount = 2;
-                                    tile->spriteframes[0] = get_sprite_rect(id - 1);
-                                    tile->spriteframes[1] = get_sprite_rect(atoi(obj_names[i]));
-                                    tile->update = &update_tile;
-                                }
-                            }
-                        }
-                    }
-
-                }
+                assign_colors(tile, x, y, num_colors, color_rects, color);
+                assign_objects(tile, id, x, y, num_objects, obj_rects, 
+                        objects, obj_names);
+                if(check_flag(tile->flags, EF_START)) result = tile->pos;
                 wsl_add_entity(game,tile);
             }
             xtmp = xtmp->next;

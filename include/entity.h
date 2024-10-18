@@ -53,7 +53,8 @@ enum {
     EF_ENEMY        = 1 << 3,
     EF_ONGROUND     = 1 << 4,
     EF_TILE         = 1 << 5,
-    EF_PLATFORM     = 1 << 6
+    EF_PLATFORM     = 1 << 6,
+    EF_START        = 1 << 7
 };
 
 /*****

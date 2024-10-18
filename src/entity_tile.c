@@ -26,13 +26,22 @@ Entity* create_tile(int x, int y, SDL_Rect spriterect) {
     tile->flags |= EF_ALIVE; // Note, EF_TILE is for tiles that block movement
     tile->pos.x = x;
     tile->pos.y = y;
-    //printf("Tile created at x,y %d,%d\n",x,y);
     tile->color = hex_to_rgb(WHITE);
 
     return tile;
 }
 
+Entity* create_tilev(Vec2i pos, SDL_Rect spriterect) {
+    return create_tile(pos.x,pos.y,spriterect);
+}
+
 void update_tile(Entity *tile, WSL_App *game) {
+    /*
+     * This is used for the tiles that have the two frame animation - the gears,
+     * blinky boxes, etc. Since the game is held at 30fps, if we wanted to
+     * update every 100ms (1/10th of a second) we need to update every 3 frames:
+     * check frame % 3 == 0. 
+     */
     int i = 0;
     update_entity(tile, game);
     if((tile->frame % 3 == 0 ) && (tile->framecount > 1)) {
@@ -41,6 +50,3 @@ void update_tile(Entity *tile, WSL_App *game) {
     } 
 }
 
-Entity* create_tilev(Vec2i pos, SDL_Rect spriterect) {
-    return create_tile(pos.x,pos.y,spriterect);
-}
