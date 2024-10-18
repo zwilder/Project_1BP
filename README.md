@@ -1,13 +1,27 @@
 # Project 1-Bit Platformer
 
 SDL2 Platformer project inspired by the wonderful [1-Bit
-Platformer](https://kenney.nl/assets/1-bit-platformer-pack) designed by
+Platformer Art Assets](https://kenney.nl/assets/1-bit-platformer-pack) designed by
 [Kenney](https://kenney.nl).
 
 After "finishing" the SDL2
 [Spaceshooter](https://github.com/zwilder/spaceShooter/), I wanted to tackle a
 more complex project. Keeping the end goals simple, the "finished" game should
 have levels, scores, collectibles, environmental obstacles, multiple enemies.
+
+Right now the project will load and interpret the .tmx files saved by
+[Tiled](https://www.mapeditor.org/). You can draw the tilemap, define
+objects/colors with rectangles, and the game will load them from the command
+line with `./1BP mapfile.tmx`.
+
+The main character moves with basic physics - accelerates to a top speed, jumps
+and falls with gravity. The collision system is still a work in progress, and is
+a bit rough around the edges. The player can't walk through solid tiles, and can
+jump up through platforms to stand on them. 
+
+
+WIP Videos:
+- [10/17/2024](https://zwilder.github.io/assets/Various/1BP_WIP_241017.mp4)
 
 Goals:
 - Improve SDL2 functions written for Spaceshooter/work on SDL2 toolbox
