@@ -226,6 +226,15 @@ Vec2i load_tilemap(WSL_App *game, const char *xmlfile) {
                                 result.x = tile->pos.x;
                                 result.y = tile->pos.y;
                             }
+                            if(strcmp(objects[i], "anim") == 0 ) {
+                                if(obj_names[i]) {
+                                    tile->spriteframes = malloc(sizeof(SDL_Rect) * 2);
+                                    tile->framecount = 2;
+                                    tile->spriteframes[0] = get_sprite_rect(id - 1);
+                                    tile->spriteframes[1] = get_sprite_rect(atoi(obj_names[i]));
+                                    tile->update = &update_tile;
+                                }
+                            }
                         }
                     }
 

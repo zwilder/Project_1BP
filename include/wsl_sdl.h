@@ -52,6 +52,7 @@ typedef struct {
     bool fullscreen; 
     float dt; // Delta time - how much time has elapsed since last update
     bool scanlines; // Draw "scanlines" flag
+    bool hitbox; // Draw hitbox flag
     int state; // Current game state
 
     Entity *entities; // Linked list of entities

@@ -63,7 +63,7 @@ void update_player(Entity *player, WSL_App *game) {
     bool btn_sp = game->keyboard[SDL_SCANCODE_SPACE];
 
     float speed = 8.0f; // Temporarily here, should be stored somewhere
-    float acceleration = 1.0f;
+    float acceleration = 0.75f;
     float jumpheight = -12.0f;
 
     player->frame += 1;
@@ -151,6 +151,21 @@ void update_player(Entity *player, WSL_App *game) {
     handle_physics(player,game);
     //Update animations
 
+    /*
+    // Just to test to visually see what state the player is in
+    switch(player->state) {
+        case(ST_IDLE):
+            player->color = hex_to_rgb(LT_SKY_BLUE);
+            break;
+        case(ST_WALK):
+            player->color = hex_to_rgb(SPRING_GREEN);
+            break;
+        case(ST_JUMP):
+            player->color = hex_to_rgb(TANGERINE);
+            break;
+        default: break;
+    }
+    */
 }
 
 void spawn_player(WSL_App *game, float x, float y) {

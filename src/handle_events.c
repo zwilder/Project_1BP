@@ -50,6 +50,9 @@ void handle_keydown(SDL_KeyboardEvent *event, WSL_App *game) {
         case SDLK_F2:
             game->scanlines = !game->scanlines;
             break;
+        case SDLK_F3:
+            game->hitbox = !game->hitbox;
+            break;
         case SDLK_q:
         case SDLK_ESCAPE:
             game->running = false;

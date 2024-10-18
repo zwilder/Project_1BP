@@ -26,9 +26,19 @@ Entity* create_tile(int x, int y, SDL_Rect spriterect) {
     tile->flags |= EF_ALIVE; // Note, EF_TILE is for tiles that block movement
     tile->pos.x = x;
     tile->pos.y = y;
+    //printf("Tile created at x,y %d,%d\n",x,y);
     tile->color = hex_to_rgb(WHITE);
 
     return tile;
+}
+
+void update_tile(Entity *tile, WSL_App *game) {
+    int i = 0;
+    update_entity(tile, game);
+    if((tile->frame % 3 == 0 ) && (tile->framecount > 1)) {
+        i = (tile->frame + 1) % tile->framecount;
+        tile->spriterect = tile->spriteframes[i];
+    } 
 }
 
 Entity* create_tilev(Vec2i pos, SDL_Rect spriterect) {

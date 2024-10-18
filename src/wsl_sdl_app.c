@@ -124,8 +124,9 @@ WSL_App* wsl_init_sdl(void) {
         app = NULL;
     } else {
         app->running = true;
-        app->scanlines = false;
+        app->scanlines = true;
         app->fullscreen = false;
+        app->hitbox = false;
         // Set keyboard flags to false
         for(i = 0; i < MAX_KEYBOARD_KEYS; i++) {
             app->keyboard[i] = false;

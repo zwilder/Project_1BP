@@ -25,7 +25,7 @@ struct Entity {
     Entity *next; //Entity is a double linked list
     Entity *prev; 
 
-    Vec2f pos; //Entity position x,y. These need to be Vec2i, 2f is too "smooth"
+    Vec2i pos; //Entity position x,y. These need to be Vec2i, 2f is too "smooth"
     Vec2f dpos; // Entity delta position dx,dy
     int frame; // Animation frame timer
     int flags; // Entity flags
@@ -97,6 +97,7 @@ void update_player(Entity *player, WSL_App *game);
  * Tile - entity_tile.c
  *****/
 Entity* create_tile(int x, int y, SDL_Rect spriterect);
+void update_tile(Entity *tile, WSL_App *game);
 Entity* create_tilev(Vec2i pos, SDL_Rect spriterect);
 
 #endif //ENTITY_H

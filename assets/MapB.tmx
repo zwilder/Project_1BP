@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.10" tiledversion="1.11.0" orientation="orthogonal" renderorder="right-down" width="16" height="15" tilewidth="16" tileheight="16" infinite="0" nextlayerid="4" nextobjectid="48">
+ <tileset firstgid="1" source="monochrome_tilemap_packed.tsx"/>
+ <layer id="1" name="Tile Layer 1" width="16" height="15">
+  <data encoding="csv">
+0,0,0,0,0,0,0,0,0,0,0,0,4,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,24,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,24,0,0,0,
+0,0,0,0,0,0,251,252,253,0,0,0,6,0,0,0,
+0,0,0,0,0,0,4,0,0,0,0,25,26,27,0,0,
+230,0,0,0,0,0,24,0,0,0,0,45,46,47,0,0,
+227,0,0,0,0,0,44,0,0,0,0,0,0,0,0,0,
+268,229,230,0,0,0,0,0,0,0,0,0,0,0,0,254,
+0,0,248,0,0,0,0,0,0,0,0,0,388,389,0,0,
+0,0,248,0,0,0,0,0,0,0,368,369,370,0,0,0,
+74,0,248,0,0,251,252,253,0,310,0,310,288,289,0,0,
+191,192,193,0,0,0,0,0,0,368,369,330,308,309,0,0,
+211,212,213,230,0,0,0,0,0,330,0,330,0,0,0,0,
+231,232,233,268,229,229,230,0,0,288,289,0,0,0,0,0,
+0,0,0,0,0,0,250,0,0,308,309,0,0,0,0,0
+</data>
+ </layer>
+ <objectgroup id="2" name="colors" visible="0">
+  <object id="1" type="DARK_BROWN" x="176" y="80" width="48" height="12"/>
+  <object id="2" type="GOLDENROD" x="96" y="48" width="48" height="12"/>
+  <object id="3" type="GOLDENROD" x="80" y="160" width="48" height="12"/>
+  <object id="4" type="GOLDENROD" x="0" y="176" width="44" height="48"/>
+  <object id="5" type="GOLDENROD" x="240" y="112" width="16" height="12"/>
+  <object id="6" type="SILVER" x="144" y="128" width="80" height="108"/>
+  <object id="7" type="MED_GRAY" x="48" y="192" width="64" height="44"/>
+  <object id="8" type="MED_GRAY" x="96" y="64" width="16" height="28"/>
+  <object id="9" type="TANGERINE" x="96" y="96" width="16" height="12"/>
+  <object id="10" type="BRONZE" x="0" y="160" width="16" height="12"/>
+  <object id="11" type="MED_GRAY" x="0" y="112" width="48" height="44"/>
+  <object id="12" type="MED_GRAY" x="0" y="80" width="16" height="12"/>
+  <object id="13" type="DEEP_SKY_BLUE" x="0" y="96" width="16" height="12"/>
+  <object id="14" type="MED_GRAY" x="32" y="160" width="16" height="12"/>
+  <object id="33" type="MED_GRAY" x="176" y="0" width="48" height="76"/>
+ </objectgroup>
+ <objectgroup id="3" name="objects">
+  <object id="15" name="327" type="anim" x="192" y="160" width="12" height="12"/>
+  <object id="16" name="328" type="anim" x="208" y="160" width="12" height="12"/>
+  <object id="17" name="347" type="anim" x="192" y="176" width="12" height="12"/>
+  <object id="18" name="348" type="anim" x="208" y="176" width="12" height="12"/>
+  <object id="19" name="387" type="anim" x="160" y="144" width="12" height="12"/>
+  <object id="20" name="388" type="anim" x="176" y="144" width="12" height="12"/>
+  <object id="21" name="367" type="anim" x="192" y="128" width="12" height="12"/>
+  <object id="22" name="368" type="anim" x="208" y="128" width="12" height="12"/>
+  <object id="23" type="platform" x="176" y="80" width="48" height="12"/>
+  <object id="24" type="tile" x="96" y="48" width="48" height="12"/>
+  <object id="25" type="tile" x="80" y="160" width="48" height="12"/>
+  <object id="26" type="tile" x="0" y="176" width="44" height="48"/>
+  <object id="27" type="tile" x="240" y="112" width="16" height="12"/>
+  <object id="28" type="tile" x="160" y="144" width="32" height="12"/>
+  <object id="29" type="tile" x="192" y="128" width="32" height="12"/>
+  <object id="30" type="tile" x="144" y="160" width="16" height="12"/>
+  <object id="31" name="289" type="anim" x="144" y="160" width="12" height="12"/>
+  <object id="32" type="start" x="0" y="160" width="16" height="12"/>
+  <object id="36" name="327" type="anim" x="144" y="208" width="12" height="12"/>
+  <object id="37" name="328" type="anim" x="160" y="208" width="12" height="12"/>
+  <object id="38" name="347" type="anim" x="144" y="224" width="12" height="12"/>
+  <object id="39" name="348" type="anim" x="160" y="224" width="12" height="12"/>
+  <object id="40" name="387" type="anim" x="144" y="176" width="12" height="12"/>
+  <object id="41" name="388" type="anim" x="160" y="176" width="12" height="12"/>
+  <object id="42" type="tile" x="144" y="176" width="32" height="12"/>
+  <object id="44" name="289" type="anim" x="176" y="160" width="12" height="12"/>
+  <object id="47" name="370" type="anim" x="192" y="144" width="16" height="12"/>
+ </objectgroup>
+</map>

@@ -48,7 +48,11 @@ int main(int argc, char **argv) {
 
 
     //Temporarily draw some tiles here
-    startpos = load_tilemap(game, "scratch/MapA.tmx");
+    if(argc > 1) {
+        startpos = load_tilemap(game, argv[1]);
+    } else {
+        startpos = load_tilemap(game, "assets/MapA.tmx");
+    }
 
     //Temporarily spawn the player here
     spawn_player(game, startpos.x, startpos.y);

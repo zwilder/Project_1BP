@@ -47,8 +47,10 @@ void draw(WSL_App *game) {
     //Draw stuff on the first buffer
     entity = game->entities;
     while(entity) {
-        hitbox = get_hitbox(entity);
-        SDL_RenderDrawRect(game->renderer, &hitbox);
+        if(game->hitbox) {
+            hitbox = get_hitbox(entity);
+            SDL_RenderDrawRect(game->renderer, &hitbox);
+        }
         if(entity->render) entity->render(entity, game);
         entity = entity->next;
     }
