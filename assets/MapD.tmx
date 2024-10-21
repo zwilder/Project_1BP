@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.10" tiledversion="1.11.0" orientation="orthogonal" renderorder="right-down" width="16" height="15" tilewidth="16" tileheight="16" infinite="0" nextlayerid="4" nextobjectid="36">
+ <tileset firstgid="1" source="monochrome_tilemap_packed.tsx"/>
+ <layer id="1" name="Tile Layer 1" width="16" height="15">
+  <data encoding="csv">
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,14,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,14,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,228,269,
+14,0,0,0,0,0,0,0,0,0,0,0,0,0,248,228,
+0,0,0,0,0,0,0,0,0,0,228,229,229,251,252,253,
+0,0,0,0,0,0,0,0,0,0,248,0,0,0,248,0,
+0,0,0,0,0,0,0,0,228,254,229,229,269,229,248,229,
+0,350,0,0,0,0,0,0,248,0,248,0,228,229,270,0,
+0,205,0,350,0,0,186,0,248,228,229,229,254,0,0,0,
+0,206,0,206,0,0,206,0,248,248,248,0,248,0,0,0,
+191,192,192,192,192,192,192,192,192,192,192,192,192,192,192,193,
+211,212,355,357,137,0,352,353,354,212,137,0,290,288,289,213,
+0,0,395,397,0,212,372,373,374,0,0,368,369,308,309,0
+</data>
+ </layer>
+ <objectgroup id="2" name="colors" visible="0">
+  <object id="1" type="GOLDENROD" x="0" y="176" width="256" height="60"/>
+  <object id="7" type="CHARCOAL" x="128" y="64" width="128" height="124"/>
+  <object id="8" type="CHARCOAL" x="240" y="80" width="16" height="12"/>
+  <object id="9" type="GOLDENROD" x="208" y="96" width="48" height="12"/>
+  <object id="10" type="TANGERINE" x="96" y="160" width="12" height="12"/>
+  <object id="16" type="SILVER" x="176" y="208" width="60" height="28"/>
+  <object id="20" type="SILVER" x="16" y="144" width="12" height="44"/>
+  <object id="21" type="CHARCOAL" x="32" y="208" width="28" height="28"/>
+  <object id="25" type="MED_GRAY" x="96" y="208" width="44" height="28"/>
+  <object id="27" type="GOLDENROD" x="144" y="128" width="12" height="12"/>
+  <object id="28" type="GOLDENROD" x="192" y="160" width="12" height="12"/>
+  <object id="29" type="SILVER" x="48" y="160" width="12" height="28"/>
+ </objectgroup>
+ <objectgroup id="3" name="objects">
+  <object id="4" type="tile" x="0" y="192" width="256" height="44"/>
+  <object id="6" type="tile" x="208" y="96" width="48" height="12"/>
+  <object id="11" name="327" type="anim" x="208" y="208" width="12" height="12"/>
+  <object id="12" name="328" type="anim" x="224" y="208" width="12" height="12"/>
+  <object id="13" name="347" type="anim" x="208" y="224" width="12" height="12"/>
+  <object id="14" name="348" type="anim" x="224" y="224" width="12" height="12"/>
+  <object id="15" name="start" type="start" x="224" y="80" width="12" height="12"/>
+  <object id="18" type="tile" x="192" y="160" width="12" height="12"/>
+  <object id="19" name="350" type="anim" x="16" y="144" width="12" height="12"/>
+  <object id="22" name="387" type="anim" x="176" y="224" width="12" height="12"/>
+  <object id="23" name="388" type="anim" x="192" y="224" width="12" height="12"/>
+  <object id="24" name="309" type="anim" x="192" y="208" width="12" height="12"/>
+  <object id="26" type="tile" x="144" y="128" width="12" height="12"/>
+  <object id="30" name="350" type="anim" x="48" y="160" width="12" height="12"/>
+  <object id="35" type="flip" x="48" y="160" width="12" height="12"/>
+ </objectgroup>
+</map>

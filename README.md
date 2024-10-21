@@ -1,5 +1,7 @@
 # Project 1-Bit Platformer
 
+![Screenshot](https://zwilder.github.io/assets/Various/1BP_WIP_241020.gif)
+
 SDL2 Platformer project inspired by the wonderful [1-Bit
 Platformer Art Assets](https://kenney.nl/assets/1-bit-platformer-pack) designed by
 [Kenney](https://kenney.nl).

@@ -164,6 +164,23 @@ bool is_on_ground(Entity *entity, WSL_App *game) {
 }
 
 void handle_physics(Entity *entity, WSL_App *game) {
+    /*
+     * TODO: This "works" but could definitely be improved, doesn't feel as
+     * good/solid as it should. After perusing others code, I think I should
+     * restart the entity physics from the bottom up - entities have:
+     * - position
+     * - velocity (Change in x,y. Derivative of position 'dpos')
+     * - acceleration (Rate of change in velocity, Derivative of velocity). This
+     *   is mostly constant - friction/gravity.
+     *
+     * Need a way to "look up" tiles around the entity
+     * (get_closest_tiles(entity, game) or something, basically get the 9 tiles
+     * around the entity. This gets us the tiles NEAR the entity, not the tiles
+     * TOUCHING the entity.
+     *
+     * Need to check out my integer rounding - is -0.9 and 0.9 both roundng to
+     * 0? that makes 0 almost 2 pixels wide!
+     */
     float gravity = 1.5f; 
     float friction = 0.5f;
     int new_x = (int)entity->pos.x;

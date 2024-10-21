@@ -56,13 +56,21 @@ void entity_set_sprite(Entity *e, int id) {
     e->spriterect.y = xy.y;
 }
 void update_player(Entity *player, WSL_App *game) {
+    /*
+     * TODO
+     * Most of this needs to be reworked. Movement is more shakey than it should
+     * be, and I don't think the rectangle collision stuff is working like it
+     * should. I made some notes in handle_physics() (entity.c) that I think I
+     * need to go over. This is all "ok" ish for now, it at least gets something
+     * on the screen moving and animated.
+     */
     // Save some typing below with logic checking
     bool btn_up = game->keyboard[SDL_SCANCODE_UP];
     bool btn_lt = game->keyboard[SDL_SCANCODE_LEFT];
     bool btn_rt = game->keyboard[SDL_SCANCODE_RIGHT];
     bool btn_sp = game->keyboard[SDL_SCANCODE_SPACE];
 
-    float speed = 8.0f; // Temporarily here, should be stored somewhere
+    float speed = 5.0f; // Temporarily here, should be stored somewhere
     float acceleration = 0.75f;
     float jumpheight = -12.0f;
 

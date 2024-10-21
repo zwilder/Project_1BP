@@ -22,6 +22,11 @@
 
 Entity* create_tile(int x, int y, SDL_Rect spriterect) {
     // Generic tile entity
+    /*
+     * Might be worth separating tiles into decor (pretty stuff on the screen)
+     * and tiles (stuff that can be interacted with). Easy way to do this is to
+     * add another flag (EF_DECOR). This might assist with rendering, I could
+     * sort the entity list, EF_DECOR, EF_TILE, EF_ENEMY, EF_PLAYER etc */
     Entity *tile = create_entity(spriterect);
     tile->flags |= EF_ALIVE; // Note, EF_TILE is for tiles that block movement
     tile->pos.x = x;

@@ -46,7 +46,10 @@ void assign_objects(Entity *e, int id, int x, int y, int num,
             if(objects[i]) {
                 if(strcmp(objects[i], "tile") == 0) e->flags |= EF_TILE;
                 if(strcmp(objects[i], "platform") == 0) e->flags |= EF_PLATFORM;
-                if(strcmp(objects[i], "start") == 0) e->flags |= EF_START; 
+                if(strcmp(objects[i], "start") == 0) {
+                    printf("Start read at %d,%d.\n",x,y);
+                    e->flags |= EF_START; 
+                }
                 if(strcmp(objects[i], "anim") == 0 ) {
                     if(names[i]) {
                         e->spriteframes = malloc(sizeof(SDL_Rect) * 2);
@@ -56,6 +59,7 @@ void assign_objects(Entity *e, int id, int x, int y, int num,
                         e->update = &update_tile;
                     }
                 }
+                if(strcmp(objects[i], "flip") == 0) e->flip = SDL_FLIP_HORIZONTAL;
             }
         }
 
@@ -103,7 +107,11 @@ Vec2i load_tilemap(WSL_App *game, const char *xmlfile) {
             attr = find_attribute(data->attributes, "height");
             if(attr) color_rects[i].h = atoi(attr->value);
             attr = find_attribute(data->attributes, "type");
-            if(attr) color[i] =attr->value;
+            if(attr) {
+                color[i] = attr->value;
+            } else {
+                color[i] = NULL;
+            }
             data = data->next;
         }
     }
@@ -128,10 +136,26 @@ Vec2i load_tilemap(WSL_App *game, const char *xmlfile) {
             attr = find_attribute(data->attributes, "height");
             if(attr) obj_rects[i].h = atoi(attr->value);
             attr = find_attribute(data->attributes, "type");
-            if(attr) objects[i] = attr->value;
+            if(attr) {
+                objects[i] = attr->value;
+            } else {
+                objects[i] = NULL;
+            }
             attr = find_attribute(data->attributes, "name");
-            if(attr) obj_names[i] = attr->value;
+            if(attr) {
+                obj_names[i] = attr->value;
+            } else {
+                obj_names[i] = NULL;
+            }
             data = data->next;
+        }
+        for(i = 0; i < num_objects; i++) {
+            if(objects[i]) {
+                printf("Objects[%d] is a %s\n",i, objects[i]);
+            }
+            if(obj_names[i]) {
+                printf("\tName: %s\n", obj_names[i]);
+            }
         }
     }
 
@@ -184,7 +208,10 @@ Vec2i load_tilemap(WSL_App *game, const char *xmlfile) {
                 assign_colors(tile, x, y, num_colors, color_rects, color);
                 assign_objects(tile, id, x, y, num_objects, obj_rects, 
                         objects, obj_names);
-                if(check_flag(tile->flags, EF_START)) result = tile->pos;
+                if(check_flag(tile->flags, EF_START)) {
+                    result = tile->pos;
+                    printf("Start assigned to tile. Result is: %d,%d\n",result.x,result.y);
+                }
                 wsl_add_entity(game,tile);
             }
             xtmp = xtmp->next;
