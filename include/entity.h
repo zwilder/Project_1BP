@@ -76,10 +76,10 @@ int count_entities(Entity *entity);
 
 void update_entity(Entity *entity, WSL_App *game);
 void render_entity(Entity *entity, WSL_App *game);
+void resolve_movement(Entity *entity, SDL_Rect *hitbox, WSL_App *game);
 void handle_physics(Entity *entity, WSL_App *game);
 
 bool in_bounds(float x, float y);
-void resolve_movement(Entity *entity, WSL_App *game);
 
 Vec2i get_sprite_coords(int index);
 SDL_Rect get_sprite_rect(int index);

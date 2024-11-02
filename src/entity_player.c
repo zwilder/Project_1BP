@@ -26,7 +26,7 @@ Entity* create_player(SDL_Rect spriterect) {
     player->flags |= EF_ALIVE | EF_ONGROUND;
 
     player->update = &update_player;
-    player->color = hex_to_rgb(SPRING_GREEN);
+    player->color = hex_to_rgb(BRIGHT_MAGENTA);
 
     //Hardcoded animation stuff should be replaced by a proper component later
     player->spriteframes = malloc(3 *sizeof(SDL_Rect));
@@ -71,7 +71,7 @@ void update_player(Entity *player, WSL_App *game) {
     bool btn_rt = game->keyboard[SDL_SCANCODE_RIGHT];
     bool btn_sp = game->keyboard[SDL_SCANCODE_SPACE];
 
-    float speed = 5.0f; // Temporarily here, should be stored somewhere
+    float speed = 4.0f; // Temporarily here, should be stored somewhere
     float acceleration = 0.75f;
     float jumpheight = -10.0f;
 

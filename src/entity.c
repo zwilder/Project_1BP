@@ -167,6 +167,138 @@ bool is_on_ground(Entity *entity, WSL_App *game) {
     return false;
 }
 
+void resolve_movement(Entity *entity, SDL_Rect *hitbox, WSL_App *game) {
+    SDL_Rect otherbox; 
+    int etop,ebtm,elt,ert;
+    Entity *other = game->entities;
+    /*
+    //Check for x collisions
+    hitbox->x += entity->dpos.x;
+    other = game->entities;
+    while(other) {
+        if(other != entity) {
+            otherbox = get_hitbox(other);
+            if(check_flag(other->flags, EF_TILE)) {
+                if(xy_in_rect(hitbox->x + hitbox->w, hitbox->y, otherbox)) {
+                    // Entity right is colliding with other
+                    hitbox->x = otherbox.x - hitbox->w - 1; // Slightly off
+                    entity->dpos.x = 0;
+                } else if (xy_in_rect(hitbox->x, hitbox->y, otherbox)) {
+                   // Entity left is colliding with other
+                   hitbox->x = otherbox.x + otherbox.w + 1;
+                   entity->dpos.x = 0;
+                }
+            }
+        }
+        other = other->next;
+    }
+    // Check for y collisions
+    // First check to see if the entity is on the ground (tile below entity)
+    // if so, and dpos.y < 0 (moving up/jumping) add dpos.y to hitbox->y. If not,
+    // add dpos.y to hitbox->y.
+    if(is_on_ground(entity,game)) {
+        if(entity->dpos.y < 0) hitbox->y += entity->dpos.y;
+    }else{
+        hitbox->y += entity->dpos.y;
+        entity->flags &= ~EF_ONGROUND;
+    }
+    //hitbox->y += entity->dpos.y;
+    other = game->entities;
+    while(other) {
+        if(other != entity) {
+            otherbox = get_hitbox(other);
+            if(check_flag(other->flags, EF_TILE)) {
+                if(xy_in_rect(hitbox->x,hitbox->y + hitbox->h, otherbox)) {
+                    //Entity bottom is colliding with other
+                    hitbox->y = otherbox.y - hitbox->h;
+                    entity->flags |= EF_ONGROUND;
+                    entity->dpos.y = 0;
+                } else if (xy_in_rect(hitbox->x, hitbox->y, otherbox)) {
+                    //Entity top is colliding with other
+                    hitbox->y = otherbox.y + otherbox.h; // Slightly off
+                    entity->dpos.y = 0; // Stop movement
+                }
+            }
+        }
+        other = other->next;
+    }
+    */
+    while(other) {
+        if(other != entity) {
+            otherbox = get_hitbox(other);
+            etop = hitbox->y; // For clarity, entity top/bottom/left/right
+            ebtm = hitbox->y + hitbox->h;
+            elt = hitbox->x;
+            ert = hitbox->x + hitbox->w;
+            if(check_flag(other->flags, EF_TILE)) {
+                // Check tile collisions
+                // TODO: Each entity should have it's own way of handling tile
+                // collisions, an "on_collide" function or something. 
+                // x-axis
+                if((entity->dpos.x > 0) && 
+                        (xy_in_rect(ert, etop, otherbox) || 
+                         xy_in_rect(ert, ebtm - 2, otherbox))) {
+                    //Moving right and colliding with top OR bottom edge -
+                    //buffer
+                    if(entity->dpos.y > 0 || entity->dpos.y < 0) {
+                        // Nothing
+                    } else {
+                        hitbox->x = otherbox.x - hitbox->w - 2;
+                    }
+                    entity->dpos.x = 0;
+                }
+                if ((entity->dpos.x < 0) &&
+                        (xy_in_rect(elt, etop, otherbox) ||
+                         xy_in_rect(ert, ebtm - 2, otherbox))) {
+                    //Moving left and colliding with top OR bottom edge - buffer
+                    if(entity->dpos.y > 0 || entity->dpos.y < 0) {
+                        // Nothing
+                    } else {
+                        hitbox->x = otherbox.x + otherbox.w + 2;
+                    }
+                    entity->dpos.x = 0;
+                }
+
+                // y-axis
+                if((entity->dpos.y >= 0) &&
+                        (xy_in_rect(elt, ebtm, otherbox) ||
+                         xy_in_rect(ert, ebtm, otherbox))) {
+                    //Moving down and colliding with bottom left OR right edge
+                    hitbox->y = otherbox.y - hitbox->h;
+                    entity->flags |= EF_ONGROUND;
+                    entity->dpos.y = 0;
+                } 
+                if ((entity->dpos.y < 0) &&
+                        (xy_in_rect(elt, etop, otherbox) ||
+                         xy_in_rect(ert, etop, otherbox))) {
+                    //Moving up and colliding with top left OR right edge
+                    hitbox->y = otherbox.y + otherbox.h;
+                    entity->dpos.y = 0;
+                }
+            }
+            if(check_flag(other->flags, EF_PLATFORM)) {
+                // Check platform collisions
+                // Only care about the platform when falling down onto it.
+                // Platforms we only care about the top of the sprite, so we
+                // need to adjust the otherbox. Also, adjust the width so it's
+                // slightly smaller?
+                otherbox.h = TILE_SIZE / 2;
+                otherbox.w -= 2;
+                otherbox.x += 1;
+                if((entity->dpos.y >= 0) &&
+                        (xy_in_rect(elt, ebtm, otherbox) ||
+                         xy_in_rect(ert, ebtm, otherbox))) {
+                    //Moving down and colliding with bottom left OR right edge
+                    hitbox->y = otherbox.y - hitbox->h;
+                    entity->flags |= EF_ONGROUND;
+                    entity->dpos.y = 0;
+                } 
+            }
+        }
+        other = other->next;
+    }
+}
+
 void handle_physics(Entity *entity, WSL_App *game) {
     /*
      * Third attempt at sorting this function out. Still needs work for the
@@ -174,11 +306,13 @@ void handle_physics(Entity *entity, WSL_App *game) {
      */
     float gravity = 1.5f; 
     float friction = 0.5f;
-    int sx = -(entity->dpos.x < 0); // Check sign of x
-    int new_sx = 0;
+    bool sx = !(entity->dpos.x < 0); // Sign of X, true positive/false negative
+    bool new_sx = false;
     SDL_Rect hitbox = get_hitbox(entity);
     SDL_Rect otherbox;
     Entity *other = game->entities;
+    int etop, ebtm, elt, ert; // Entity top/bottom/left/right
+    int x,y, targetX,targetY;
 
     /* Add gravity/friction */
     if(!check_flag(entity->flags, EF_ONGROUND)) {
@@ -194,61 +328,21 @@ void handle_physics(Entity *entity, WSL_App *game) {
         }
         // Friction moves entity dpos.x towards 0 but doesnt throw them in
         // reverse (TODO: It does if the ground is slippery... like ice?)
-        new_sx = -(entity->dpos.x < 0);
+        new_sx = !(entity->dpos.x < 0);
         if(sx != new_sx) {
             entity->dpos.x = 0;
         }
     }
     
-    /* Resolve x-axis movement */
-    //Predict x position
-    //Update hitbox
+    /* Resolve movement */
     hitbox.x += entity->dpos.x;
-    //Check for x collisions
-    //- Iterate through all potential colliding entities
-    //- For each, check if updated x overlaps with other entities hitbox
-    //- If collision: snap to nearest edge, reset horizontal velocity
-    other = game->entities;
-    while(other) {
-        if(other != entity) {
-            otherbox = get_hitbox(other);
-            if(check_flag(other->flags, EF_TILE)) {
-                if(xy_in_rect(hitbox.x + hitbox.w, hitbox.y, otherbox)) {
-                    // Entity right is colliding with other
-                    hitbox.x = otherbox.x - hitbox.w - 1; // Slightly off
-                    entity->dpos.x = 0;
-                } else if (xy_in_rect(hitbox.x, hitbox.y, otherbox)) {
-                   // Entity left is colliding with other
-                   hitbox.x = otherbox.x + otherbox.w + 1;
-                   entity->dpos.x = 0;
-                }
-            }
-        }
-        other = other->next;
+    if(is_on_ground(entity,game)) {
+        if(entity->dpos.y < 0) hitbox.y += entity->dpos.y; //Moving up
+    }else{
+        hitbox.y += entity->dpos.y; //Not on ground
+        entity->flags &= ~EF_ONGROUND;
     }
-
-    // Now check y collisions, same as above
-    hitbox.y += entity->dpos.y;
-    entity->flags &= ~EF_ONGROUND;
-    other = game->entities;
-    while(other) {
-        if(other != entity) {
-            otherbox = get_hitbox(other);
-            if(check_flag(other->flags, EF_TILE)) {
-                if(xy_in_rect(hitbox.x,hitbox.y + hitbox.h, otherbox)) {
-                    //Entity bottom is colliding with other
-                    hitbox.y = otherbox.y - hitbox.h;
-                    entity->flags |= EF_ONGROUND;
-                    entity->dpos.y = 0;
-                } else if (xy_in_rect(hitbox.x, hitbox.y, otherbox)) {
-                    //Entity top is colliding with other
-                    hitbox.y = otherbox.y + otherbox.h; // Slightly off
-                    entity->dpos.y = 0; // Stop movement
-                }
-            }
-        }
-        other = other->next;
-    }
+    resolve_movement(entity, &hitbox, game);
 
     // Check if hitbox is oob (temporarily block movement off screen)
     /*
@@ -269,21 +363,22 @@ void handle_physics(Entity *entity, WSL_App *game) {
     }
     */
 
-    //Finalize position - move entity to resolved hitbox
-    /*
     // Fun color just to visualize collisions 
+    /*
     other = game->entities;
     while(other) {
         if(other != entity) {
             otherbox = get_hitbox(other);
             other->color = hex_to_rgb(CHARCOAL);
             if(check_collision_rect(otherbox, hitbox)) {
-                other->color = hex_to_rgb(HOT_PINK);
+                other->color = hex_to_rgb(SPRING_GREEN);
             }
         }
         other = other->next;
     }
     */
+
+    //Finalize position - move entity to resolved hitbox
     entity->pos.x = hitbox.x;
     entity->pos.y = hitbox.y;
 }
