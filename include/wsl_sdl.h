@@ -58,6 +58,16 @@ typedef struct {
     Entity *entities; // Linked list of entities
 } WSL_App;
 
+/*
+ * TODO: Explore this idea - what if there were multiple linked lists of entities, and then
+ * WSL_App->entities pointed to the combined list? 
+ *
+ * There could be a linked list of decor/tiles/enemies and player - then when
+ * rendering it would be a cinch to render things in order. This could give
+ * functions the option of searching all the enities easily OR going straight to
+ * the type of entity it is looking for. 
+ */
+
 /*****
  * WSL_App - wsl_sdl_app.c
  *****/

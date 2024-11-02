@@ -72,6 +72,7 @@ enum {
  *****/
 Entity *create_entity(SDL_Rect spriterect);
 void destroy_entity(Entity *entity);
+int count_entities(Entity *entity);
 
 void update_entity(Entity *entity, WSL_App *game);
 void render_entity(Entity *entity, WSL_App *game);

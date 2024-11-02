@@ -22,6 +22,29 @@
 
 /*
  * Take a parsed XML file (from an XML_Node), and create game entities
+ *
+ *
+ * Using Tiled is working well enough - the XML files it generates are
+ * sufficient for me to work into a game. I think my only gripe is that I can't
+ * set attributes for each tile. I think if I was to design an XML style tag for
+ * a tilemap I would probably have each tile defined as something like
+<tileset width="16" height="16" src="monochrome_tilemap_packed.png">
+<tilemap width="16" height="15">
+    ...
+    <tile x="7" y="6" sprite="224" flags="TILE|FLIP" color="RUST_RED"/> 
+    ...
+</tilemap>
+<objects>
+    ...
+    <obj id="3" x="1" y="10" type="START"/>
+    <obj id="4" x="7" y="6" type="ANIM" sprite="225"/>
+    ...
+</objects>
+
+ * I like being able to "paint" with the tiles, definitely **the** way to design
+ * levels. Might be a fun project to design a level editor that can draw on a
+ * grid of a specified size, then each grid space can have a sprite id, flags,
+ * color etc. Another layer could have objects
  */
 
 void assign_colors(Entity *e, int x, int y, int num, 
@@ -47,7 +70,7 @@ void assign_objects(Entity *e, int id, int x, int y, int num,
                 if(strcmp(objects[i], "tile") == 0) e->flags |= EF_TILE;
                 if(strcmp(objects[i], "platform") == 0) e->flags |= EF_PLATFORM;
                 if(strcmp(objects[i], "start") == 0) {
-                    printf("Start read at %d,%d.\n",x,y);
+                    //printf("Start read at %d,%d.\n",x,y);
                     e->flags |= EF_START; 
                 }
                 if(strcmp(objects[i], "anim") == 0 ) {
@@ -149,6 +172,7 @@ Vec2i load_tilemap(WSL_App *game, const char *xmlfile) {
             }
             data = data->next;
         }
+        /*
         for(i = 0; i < num_objects; i++) {
             if(objects[i]) {
                 printf("Objects[%d] is a %s\n",i, objects[i]);
@@ -157,6 +181,7 @@ Vec2i load_tilemap(WSL_App *game, const char *xmlfile) {
                 printf("\tName: %s\n", obj_names[i]);
             }
         }
+        */
     }
 
     // Find the "layer" tag
@@ -210,7 +235,7 @@ Vec2i load_tilemap(WSL_App *game, const char *xmlfile) {
                         objects, obj_names);
                 if(check_flag(tile->flags, EF_START)) {
                     result = tile->pos;
-                    printf("Start assigned to tile. Result is: %d,%d\n",result.x,result.y);
+                    //printf("Start assigned to tile. Result is: %d,%d\n",result.x,result.y);
                 }
                 wsl_add_entity(game,tile);
             }

@@ -55,6 +55,7 @@ void entity_set_sprite(Entity *e, int id) {
     e->spriterect.x = xy.x;
     e->spriterect.y = xy.y;
 }
+
 void update_player(Entity *player, WSL_App *game) {
     /*
      * TODO
@@ -72,7 +73,7 @@ void update_player(Entity *player, WSL_App *game) {
 
     float speed = 5.0f; // Temporarily here, should be stored somewhere
     float acceleration = 0.75f;
-    float jumpheight = -12.0f;
+    float jumpheight = -10.0f;
 
     player->frame += 1;
     //Update state
@@ -157,6 +158,7 @@ void update_player(Entity *player, WSL_App *game) {
     
     //Update physics
     handle_physics(player,game);
+    //printf("Player x,y: %d,%d\n",(int)player->pos.x, (int)player->pos.y);
     //Update animations
 
     /*

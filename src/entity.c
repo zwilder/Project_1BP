@@ -65,6 +65,11 @@ void destroy_entity(Entity *entity) {
     free(entity);
 }
 
+int count_entities(Entity *entity) {
+    if(!entity) return 0;
+    return(1 + count_entities(entity->next));
+}
+
 void update_entity(Entity *entity, WSL_App *game) {
     // Generic entity update function
     // update() is called once per second (Gameloop is locked at 60fps)
@@ -123,7 +128,6 @@ bool tile_platform(int x, int y, WSL_App *game) {
     // Find entity at x,y - check to see if it has EF_PLATFORM_
     // Assumes entities are aligned to map coordintes
     Entity *e = game->entities;
-    int platform_top = 0;
     while(e) {
         if(((e->pos.x / TILE_SIZE) == x) && ((e->pos.y / TILE_SIZE) == y)) {
             if(check_flag(e->flags, EF_PLATFORM)) {
@@ -165,35 +169,22 @@ bool is_on_ground(Entity *entity, WSL_App *game) {
 
 void handle_physics(Entity *entity, WSL_App *game) {
     /*
-     * TODO: This "works" but could definitely be improved, doesn't feel as
-     * good/solid as it should. After perusing others code, I think I should
-     * restart the entity physics from the bottom up - entities have:
-     * - position
-     * - velocity (Change in x,y. Derivative of position 'dpos')
-     * - acceleration (Rate of change in velocity, Derivative of velocity). This
-     *   is mostly constant - friction/gravity.
-     *
-     * Need a way to "look up" tiles around the entity
-     * (get_closest_tiles(entity, game) or something, basically get the 9 tiles
-     * around the entity. This gets us the tiles NEAR the entity, not the tiles
-     * TOUCHING the entity.
-     *
-     * Need to check out my integer rounding - is -0.9 and 0.9 both roundng to
-     * 0? that makes 0 almost 2 pixels wide!
+     * Third attempt at sorting this function out. Still needs work for the
+     * corners of tiles to be handled properly BUT its a darn good start.
      */
     float gravity = 1.5f; 
     float friction = 0.5f;
-    int new_x = (int)entity->pos.x;
-    int new_y = (int)entity->pos.y;
-    int mx_left, mx_right, my_top, my_bottom;
-    int tile_below_y;
-    // x,y coords are the top left of the entity's sprite
+    int sx = -(entity->dpos.x < 0); // Check sign of x
+    int new_sx = 0;
+    SDL_Rect hitbox = get_hitbox(entity);
+    SDL_Rect otherbox;
+    Entity *other = game->entities;
 
-    // Add gravity
-    entity->dpos.y += gravity;
-
-    // Add friction TODO: friction should be a property of the ground/tile that
-    // the entity is on. (set this to 0 and the entity slides around on ice!)
+    /* Add gravity/friction */
+    if(!check_flag(entity->flags, EF_ONGROUND)) {
+        entity->dpos.y += gravity;
+    }
+    
     if(check_flag(entity->flags, EF_ONGROUND)) {
         if(entity->dpos.x < 0) {
             //Moving left, add friction right
@@ -201,78 +192,100 @@ void handle_physics(Entity *entity, WSL_App *game) {
         } else {
             entity->dpos.x -= friction;
         }
-    }
-
-    // predict new position 
-    new_x += (int)(entity->dpos.x + 0.5f);
-    new_y += (int)(entity->dpos.y + 0.5f);
-
-    // Check screen collisions
-    if(!in_bounds(new_x, entity->pos.y)) {
-        // moving horizontally out of bounds TODO: This assumes entities can't
-        // move "off screen"
-        new_x = (new_x < 0) ? (0) : (SCREEN_W - TILE_SIZE);
-    }
-    if(!in_bounds(entity->pos.x, new_y)) {
-        // Moving vertically out of bounds
-        //new_y = (new_y < 0) ? (0) : (SCREEN_H - TILE_SIZE);
-        if(new_y < 0) {
-            new_y = 0;
-        } else {
-            new_y = SCREEN_H - TILE_SIZE;
-            entity->flags |= EF_ONGROUND;
-        }
-        
-    }
-
-    // Check horizontal collisions
-    mx_left = new_x / TILE_SIZE;
-    mx_right = (new_x + TILE_SIZE - 1) / TILE_SIZE;
-    my_top = entity->pos.y / TILE_SIZE;
-    my_bottom = (entity->pos.y + TILE_SIZE - 1) / TILE_SIZE;
-    if(!tile_solid(mx_left, my_top, game) && !tile_solid(mx_right, my_top, game) &&
-            !tile_solid(mx_left, my_bottom, game) && !tile_solid(mx_right, my_bottom, game)) {
-        entity->pos.x = new_x;
-    } else {
-        entity->dpos.x = 0;
-    }
-
-    // Check vertical collisions
-    tile_below_y = (new_y + TILE_SIZE - 1) / TILE_SIZE;
-    if(entity->dpos.y > 0) {
-        if(!tile_solid(mx_left, tile_below_y, game) &&
-                !tile_solid(mx_right, tile_below_y, game) &&
-                !tile_platform(mx_left, tile_below_y, game) &&
-                !tile_platform(mx_right, tile_below_y, game)) {
-            //NO collision, keep falling
-            entity->pos.y = new_y;
-            entity->flags &= ~EF_ONGROUND;
-        } else {
-            // Hit ground OR platform, stop falling
-            entity->dpos.y = 0;
-            entity->flags |= EF_ONGROUND;
-        }
-    } else {
-        // Moving up, ignore platforms but check tiles
-        if(!tile_solid(mx_left, tile_below_y, game) &&
-                !tile_solid(mx_right, tile_below_y, game)) {
-            //No collision, move up
-            entity->pos.y = new_y;
-            entity->flags &= ~EF_ONGROUND;
-        } else {
-            entity->dpos.y = 0;
+        // Friction moves entity dpos.x towards 0 but doesnt throw them in
+        // reverse (TODO: It does if the ground is slippery... like ice?)
+        new_sx = -(entity->dpos.x < 0);
+        if(sx != new_sx) {
+            entity->dpos.x = 0;
         }
     }
+    
+    /* Resolve x-axis movement */
+    //Predict x position
+    //Update hitbox
+    hitbox.x += entity->dpos.x;
+    //Check for x collisions
+    //- Iterate through all potential colliding entities
+    //- For each, check if updated x overlaps with other entities hitbox
+    //- If collision: snap to nearest edge, reset horizontal velocity
+    other = game->entities;
+    while(other) {
+        if(other != entity) {
+            otherbox = get_hitbox(other);
+            if(check_flag(other->flags, EF_TILE)) {
+                if(xy_in_rect(hitbox.x + hitbox.w, hitbox.y, otherbox)) {
+                    // Entity right is colliding with other
+                    hitbox.x = otherbox.x - hitbox.w - 1; // Slightly off
+                    entity->dpos.x = 0;
+                } else if (xy_in_rect(hitbox.x, hitbox.y, otherbox)) {
+                   // Entity left is colliding with other
+                   hitbox.x = otherbox.x + otherbox.w + 1;
+                   entity->dpos.x = 0;
+                }
+            }
+        }
+        other = other->next;
+    }
+
+    // Now check y collisions, same as above
+    hitbox.y += entity->dpos.y;
+    entity->flags &= ~EF_ONGROUND;
+    other = game->entities;
+    while(other) {
+        if(other != entity) {
+            otherbox = get_hitbox(other);
+            if(check_flag(other->flags, EF_TILE)) {
+                if(xy_in_rect(hitbox.x,hitbox.y + hitbox.h, otherbox)) {
+                    //Entity bottom is colliding with other
+                    hitbox.y = otherbox.y - hitbox.h;
+                    entity->flags |= EF_ONGROUND;
+                    entity->dpos.y = 0;
+                } else if (xy_in_rect(hitbox.x, hitbox.y, otherbox)) {
+                    //Entity top is colliding with other
+                    hitbox.y = otherbox.y + otherbox.h; // Slightly off
+                    entity->dpos.y = 0; // Stop movement
+                }
+            }
+        }
+        other = other->next;
+    }
+
+    // Check if hitbox is oob (temporarily block movement off screen)
     /*
-    if(!tile_solid(mx_left, tile_below_y, game) && !tile_solid(mx_right, tile_below_y, game)) {
-        entity->pos.y = new_y;
-        entity->flags &= ~EF_ONGROUND;
-    } else {
-        // Hit ground, stop falling
-        entity->dpos.y = 0;
+    if(!in_bounds(hitbox.x + hitbox.w, hitbox.y)) {
+        //right oob
+        hitbox.x = SCREEN_W - TILE_SIZE - 1;
+    } else if(!in_bounds(hitbox.x, hitbox.y)) {
+        //left oob
+        hitbox.x = 1;
+    }
+    if(!in_bounds(hitbox.x, hitbox.y + hitbox.h)) {
+        //bottom oob
+        hitbox.y = SCREEN_H - TILE_SIZE - 1;
         entity->flags |= EF_ONGROUND;
+    } else if(!in_bounds(hitbox.x, hitbox.y)) {
+        //top oob
+        hitbox.y = 0;
     }
     */
+
+    //Finalize position - move entity to resolved hitbox
+    /*
+    // Fun color just to visualize collisions 
+    other = game->entities;
+    while(other) {
+        if(other != entity) {
+            otherbox = get_hitbox(other);
+            other->color = hex_to_rgb(CHARCOAL);
+            if(check_collision_rect(otherbox, hitbox)) {
+                other->color = hex_to_rgb(HOT_PINK);
+            }
+        }
+        other = other->next;
+    }
+    */
+    entity->pos.x = hitbox.x;
+    entity->pos.y = hitbox.y;
 }
 
 bool in_bounds(float x, float y) {
@@ -285,10 +298,6 @@ bool in_bounds(float x, float y) {
     bool xoob = (x < 0) || ((x + TILE_SIZE) > SCREEN_W);
     bool yoob = (y < 0) || ((y + TILE_SIZE) > SCREEN_H);
     return !(xoob || yoob);
-}
-
-void resolve_movement(Entity *entity, WSL_App *game) {
-
 }
 
 Vec2i get_sprite_coords(int index) {
@@ -362,7 +371,7 @@ bool check_collision_rect(SDL_Rect a, SDL_Rect b) {
 }
 
 bool xy_in_rect(float bx, float by, SDL_Rect a) {
-    bool x = ((bx >= a.x) && (bx <= a.x + a.w));
-    bool y = ((by >= a.y) && (by <= a.y + a.h));
+    bool x = ((bx >= a.x) && (bx < a.x + a.w));
+    bool y = ((by >= a.y) && (by < a.y + a.h));
     return (x && y);
 }
