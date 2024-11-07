@@ -68,7 +68,9 @@ void assign_objects(Entity *e, int id, int x, int y, int num,
         if(xy_in_rect(x * TILE_SIZE, y * TILE_SIZE, rects[i])) {
             if(objects[i]) {
                 if(strcmp(objects[i], "tile") == 0) e->flags |= EF_TILE;
-                if(strcmp(objects[i], "platform") == 0) e->flags |= EF_PLATFORM;
+                if(strcmp(objects[i], "platform") == 0){
+                    e->flags |= EF_PLATFORM;
+                }
                 if(strcmp(objects[i], "start") == 0) {
                     //printf("Start read at %d,%d.\n",x,y);
                     e->flags |= EF_START; 

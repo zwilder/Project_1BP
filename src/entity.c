@@ -167,6 +167,48 @@ bool is_on_ground(Entity *entity, WSL_App *game) {
     return false;
 }
 
+void adjust_platform_hitbox(SDL_Rect *hitbox, WSL_App *game) {
+    /*
+     * Check if the platform hitbox (*hitbox):
+     * - Has a platform or tile located to the left? If not, hitbox->x += 1;
+     * - Has a platform or tile located to the right? If not hitbox->w -= 1;
+     */
+    int lx = hitbox->x - TILE_SIZE + 1;
+    int rx = hitbox->x + TILE_SIZE + 1;
+    int y = hitbox->y;
+    bool left = false, right = false;
+    SDL_Rect otherbox;
+    Entity *other = game->entities;
+
+    // Find out if the point located at x - TILE_SIZE+1 is inside a tile
+    // Find if the point located at x + TILE_SIZE + 1 is inside a tile
+    while(other) {
+        otherbox = get_hitbox(other);
+        if(xy_in_rect(lx,y,otherbox)) {
+            if(check_flag(other->flags, EF_TILE) ||
+                    check_flag(other->flags, EF_PLATFORM)) {
+                left = true;
+            }
+        }
+        if(xy_in_rect(rx,y,otherbox)) {
+            if(check_flag(other->flags, EF_TILE) ||
+                    check_flag(other->flags, EF_PLATFORM)) {
+                right = true;
+            }
+        }
+        other = other->next;
+    }
+    if(!left) {
+        // No tile/platform on left, adjust
+        hitbox->x += 3;
+        hitbox->w -= 3;
+    }
+    if(!right) {
+        // No tile/platform on right, adjust
+        hitbox->w -= 3;
+    }
+}
+
 void resolve_movement(Entity *entity, SDL_Rect *hitbox, WSL_App *game) {
     SDL_Rect otherbox; 
     int etop,ebtm,elt,ert;
@@ -243,7 +285,7 @@ void resolve_movement(Entity *entity, SDL_Rect *hitbox, WSL_App *game) {
                     if(entity->dpos.y > 0 || entity->dpos.y < 0) {
                         // Nothing
                     } else {
-                        hitbox->x = otherbox.x - hitbox->w - 2;
+                        hitbox->x = otherbox.x - hitbox->w;
                     }
                     entity->dpos.x = 0;
                 }
@@ -254,7 +296,7 @@ void resolve_movement(Entity *entity, SDL_Rect *hitbox, WSL_App *game) {
                     if(entity->dpos.y > 0 || entity->dpos.y < 0) {
                         // Nothing
                     } else {
-                        hitbox->x = otherbox.x + otherbox.w + 2;
+                        hitbox->x = otherbox.x + otherbox.w;
                     }
                     entity->dpos.x = 0;
                 }
@@ -280,11 +322,9 @@ void resolve_movement(Entity *entity, SDL_Rect *hitbox, WSL_App *game) {
                 // Check platform collisions
                 // Only care about the platform when falling down onto it.
                 // Platforms we only care about the top of the sprite, so we
-                // need to adjust the otherbox. Also, adjust the width so it's
-                // slightly smaller?
+                // need to adjust the otherbox. 
                 otherbox.h = TILE_SIZE / 2;
-                otherbox.w -= 2;
-                otherbox.x += 1;
+                adjust_platform_hitbox(&otherbox, game);
                 if((entity->dpos.y >= 0) &&
                         (xy_in_rect(elt, ebtm, otherbox) ||
                          xy_in_rect(ert, ebtm, otherbox))) {
@@ -309,10 +349,6 @@ void handle_physics(Entity *entity, WSL_App *game) {
     bool sx = !(entity->dpos.x < 0); // Sign of X, true positive/false negative
     bool new_sx = false;
     SDL_Rect hitbox = get_hitbox(entity);
-    SDL_Rect otherbox;
-    Entity *other = game->entities;
-    int etop, ebtm, elt, ert; // Entity top/bottom/left/right
-    int x,y, targetX,targetY;
 
     /* Add gravity/friction */
     if(!check_flag(entity->flags, EF_ONGROUND)) {
@@ -360,21 +396,6 @@ void handle_physics(Entity *entity, WSL_App *game) {
     } else if(!in_bounds(hitbox.x, hitbox.y)) {
         //top oob
         hitbox.y = 0;
-    }
-    */
-
-    // Fun color just to visualize collisions 
-    /*
-    other = game->entities;
-    while(other) {
-        if(other != entity) {
-            otherbox = get_hitbox(other);
-            other->color = hex_to_rgb(CHARCOAL);
-            if(check_collision_rect(otherbox, hitbox)) {
-                other->color = hex_to_rgb(SPRING_GREEN);
-            }
-        }
-        other = other->next;
     }
     */
 
